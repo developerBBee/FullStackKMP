@@ -29,7 +29,7 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
             userCollection
                 .find(
                     Filters.and(
-                        Filters.eq(User::userName.name, user.userName),
+                        Filters.eq(User::username.name, user.username),
                         Filters.eq(User::password.name, user.password),
                     )
                 ).firstOrNull()

@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 actual data class User(
     actual val _id: String = "",
-    actual val userName: String = "",
+    actual val username: String = "",
     actual val password: String = ""
 )
 
 @Serializable
 actual data class UserWithoutPassword(
     actual val _id: String = "",
-    actual val userName: String = ""
+    actual val username: String = ""
 )

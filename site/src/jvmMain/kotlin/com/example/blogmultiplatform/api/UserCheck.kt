@@ -21,13 +21,13 @@ suspend fun userCheck(context: ApiContext) {
             }
             ?.let { reqUser ->
                 context.data.getValue<MongoDB>().checkUserExistence(
-                    User(userName = reqUser.userName, password = hashPassword(reqUser.password))
+                    User(username = reqUser.username, password = hashPassword(reqUser.password))
                 )
             }
             ?.also { user ->
                 context.res.setBodyText(
                     Json.encodeToString(
-                        UserWithoutPassword(_id = user._id, userName = user.userName)
+                        UserWithoutPassword(_id = user._id, username = user.username)
                     )
                 )
             }
