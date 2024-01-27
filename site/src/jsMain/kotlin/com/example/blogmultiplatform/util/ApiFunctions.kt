@@ -20,3 +20,17 @@ suspend fun checkUserExistence(user: User): UserWithoutPassword? {
         println(e.message)
     }.getOrNull()
 }
+
+suspend fun checkUserId(id: String): Boolean {
+    return runCatching {
+        window.api.tryPost(
+            apiPath = "checkuserid",
+            body = Json.encodeToString(id).encodeToByteArray()
+        )?.decodeToString().let { result ->
+            Json.decodeFromString<Boolean>(result.toString())
+        }
+    }.getOrElse { e ->
+        println(e.message)
+        false
+    }
+}
