@@ -27,7 +27,7 @@ suspend fun userCheck(context: ApiContext) {
             ?.also { user ->
                 context.res.setBodyText(
                     Json.encodeToString(
-                        UserWithoutPassword(id = user.id, userName = user.userName)
+                        UserWithoutPassword(_id = user._id, userName = user.userName)
                     )
                 )
             }
