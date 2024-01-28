@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.blogmultiplatform.navigation.Screen
 import com.varabyte.kobweb.compose.css.AnimationIterationCount
 import com.varabyte.kobweb.compose.css.functions.linearGradient
 import com.varabyte.kobweb.compose.foundation.layout.Box
@@ -48,7 +49,7 @@ fun isUserLoggedIn(content: @Composable () -> Unit) {
         userIdExists = if (!userId.isNullOrEmpty()) checkUserId(userId) else false
 
         if (!(remembered && userIdExists)) {
-            context.router.navigateTo("/admin/login")
+            context.router.navigateTo(Screen.AdminLogin.route)
         }
     }
 

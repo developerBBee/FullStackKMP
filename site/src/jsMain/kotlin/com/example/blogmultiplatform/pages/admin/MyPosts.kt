@@ -2,7 +2,7 @@ package com.example.blogmultiplatform.pages.admin
 
 import androidx.compose.runtime.Composable
 import com.example.blogmultiplatform.components.SidePanel
-import com.example.blogmultiplatform.util.Constants.PAGE_WIDTH
+import com.example.blogmultiplatform.util.Constants
 import com.example.blogmultiplatform.util.isUserLoggedIn
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
@@ -17,23 +17,23 @@ import org.jetbrains.compose.web.css.px
 
 @Page
 @Composable
-fun HomePage() {
-    isUserLoggedIn() {
-        HomeScreen()
+fun MyPostsPage() {
+    isUserLoggedIn {
+        MyPostsScreen()
     }
 }
 
 @Composable
-fun HomeScreen() {
+fun MyPostsScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.fillMaxSize()
-                .maxWidth(PAGE_WIDTH.px),
+                .maxWidth(Constants.PAGE_WIDTH.px),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
             SidePanel()
         }
-        SpanText(text = "Home")
+        SpanText(text = "MyPosts")
     }
 }

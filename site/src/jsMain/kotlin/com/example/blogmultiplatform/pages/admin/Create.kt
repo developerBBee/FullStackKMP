@@ -17,14 +17,14 @@ import org.jetbrains.compose.web.css.px
 
 @Page
 @Composable
-fun HomePage() {
+fun CreatePage() {
     isUserLoggedIn() {
-        HomeScreen()
+        CreateScreen()
     }
 }
 
 @Composable
-fun HomeScreen() {
+fun CreateScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -34,6 +34,6 @@ fun HomeScreen() {
         ) {
             SidePanel()
         }
-        SpanText(text = "Home")
+        SpanText(text = "Create")
     }
 }
