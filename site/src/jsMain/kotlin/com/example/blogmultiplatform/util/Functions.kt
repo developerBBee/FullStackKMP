@@ -32,6 +32,7 @@ import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.w3c.dom.get
+import org.w3c.dom.set
 
 val SpinKeyframes by Keyframes {
     from { Modifier.rotate(0.deg) }
@@ -93,4 +94,10 @@ fun LoadingIndicator() {
             )
         }
     }
+}
+
+fun logout() {
+    localStorage["remember"] = "false"
+    localStorage["userId"] = ""
+    localStorage["username"] = ""
 }
