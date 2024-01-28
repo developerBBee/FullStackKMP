@@ -32,7 +32,7 @@ fun MyPostsScreen() {
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-            SidePanel()
+            SidePanel {}
         }
         SpanText(text = "MyPosts")
     }

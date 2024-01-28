@@ -32,7 +32,7 @@ fun CreateScreen() {
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-            SidePanel()
+            SidePanel {}
         }
         SpanText(text = "Create")
     }

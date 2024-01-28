@@ -1,6 +1,12 @@
 package com.example.blogmultiplatform.pages.admin
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import com.example.blogmultiplatform.components.OverflowSidePanel
 import com.example.blogmultiplatform.components.SidePanel
 import com.example.blogmultiplatform.util.Constants.PAGE_WIDTH
 import com.example.blogmultiplatform.util.isUserLoggedIn
@@ -13,6 +19,8 @@ import com.varabyte.kobweb.compose.ui.modifiers.fillMaxSize
 import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.text.SpanText
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.px
 
 @Page
@@ -25,6 +33,9 @@ fun HomePage() {
 
 @Composable
 fun HomeScreen() {
+    var overflowMenuOpened by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -32,7 +43,15 @@ fun HomeScreen() {
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-            SidePanel()
+            SidePanel { overflowMenuOpened = true }
+            if (overflowMenuOpened) {
+                OverflowSidePanel {
+                    scope.launch {
+                        delay(300)
+                        overflowMenuOpened = false
+                    }
+                }
+            }
         }
         SpanText(text = "Home")
     }
