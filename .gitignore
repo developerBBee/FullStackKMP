@@ -25,3 +25,6 @@ kotlin-js-store
 # Gradle ignores
 .gradle
 local.properties
+
+# key-file
+KeyFile*

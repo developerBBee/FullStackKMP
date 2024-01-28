@@ -6,33 +6,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.blogmultiplatform.components.LoadingIndicator
+import com.example.blogmultiplatform.models.RandomJoke
 import com.example.blogmultiplatform.navigation.Screen
-import com.varabyte.kobweb.compose.css.AnimationIterationCount
-import com.varabyte.kobweb.compose.css.functions.linearGradient
-import com.varabyte.kobweb.compose.foundation.layout.Box
-import com.varabyte.kobweb.compose.ui.Alignment
+import com.varabyte.kobweb.browser.http.http
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.graphics.Colors
-import com.varabyte.kobweb.compose.ui.modifiers.animation
-import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
-import com.varabyte.kobweb.compose.ui.modifiers.backgroundImage
-import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
-import com.varabyte.kobweb.compose.ui.modifiers.fillMaxSize
-import com.varabyte.kobweb.compose.ui.modifiers.height
-import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.modifiers.rotate
-import com.varabyte.kobweb.compose.ui.modifiers.width
 import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.animation.Keyframes
-import com.varabyte.kobweb.silk.components.animation.toAnimation
 import kotlinx.browser.localStorage
-import org.jetbrains.compose.web.css.AnimationTimingFunction
+import kotlinx.browser.window
+import kotlinx.serialization.json.Json
 import org.jetbrains.compose.web.css.deg
-import org.jetbrains.compose.web.css.ms
-import org.jetbrains.compose.web.css.percent
-import org.jetbrains.compose.web.css.px
 import org.w3c.dom.get
 import org.w3c.dom.set
+import kotlin.js.Date
 
 val SpinKeyframes by Keyframes {
     from { Modifier.rotate(0.deg) }
@@ -62,42 +50,29 @@ fun isUserLoggedIn(content: @Composable () -> Unit) {
     }
 }
 
-@Composable
-fun LoadingIndicator() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Box(
-            modifier = Modifier
-                .width(40.px)
-                .height(40.px)
-                .padding(2.px)
-                .borderRadius(50.percent)
-                .backgroundImage(
-                    linearGradient(
-                        from = Colors.Aqua,
-                        to = Colors.White
-                    )
-                )
-                .animation(
-                    SpinKeyframes.toAnimation(
-                        duration = 1000.ms,
-                        timingFunction = AnimationTimingFunction.Linear,
-                        iterationCount = AnimationIterationCount.Infinite,
-                    )
-                )
-        ) {
-            Box(
-                modifier = Modifier
-                    .width(100.percent)
-                    .height(100.percent)
-                    .backgroundColor(color = Colors.White)
-                    .borderRadius(50.percent)
-            )
-        }
-    }
-}
-
 fun logout() {
     localStorage["remember"] = "false"
     localStorage["userId"] = ""
     localStorage["username"] = ""
+}
+
+suspend fun getJoke(): RandomJoke = runCatching {
+    window.http.get(KeyFile.HUMOR_API_URL).decodeToString()
+        .let { result ->
+            localStorage["date"] = Date.now().toString()
+            localStorage["joke"] = result
+            Json.decodeFromString<RandomJoke>(result)
+        }
+}.getOrElse { e ->
+    println("getJoke() error ${e.message}")
+    getLocalJoke()
+}
+
+fun getLocalJoke(): RandomJoke = runCatching {
+    requireNotNull(
+        localStorage["joke"]?.let { Json.decodeFromString<RandomJoke>(it) }
+    )
+}.getOrElse { e ->
+    println("getLocalJoke() error ${e.message}")
+    RandomJoke(id = -1, joke = "Unexpected Error.")
 }
