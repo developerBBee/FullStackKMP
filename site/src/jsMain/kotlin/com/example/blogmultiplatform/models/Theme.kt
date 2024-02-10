@@ -28,6 +28,14 @@ enum class Theme(
         hex = "#000000",
         rgb = rgba(0, 0, 0, 0.5)
     ),
+    Gray(
+        hex = "#E9E9E9",
+        rgb = rgb(233, 233, 233)
+    ),
+    DarkGray(
+        hex = "#646464",
+        rgb = rgb(100, 100, 100)
+    ),
     White(
         hex = "#FFFFFF",
         rgb = rgb(255, 255, 255)
