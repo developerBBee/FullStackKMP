@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.components.AdminPageLayout
+import com.example.blogmultiplatform.components.MessagePopup
 import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.EditorKey
 import com.example.blogmultiplatform.models.Post
@@ -98,6 +99,8 @@ data class CreatePageUiEvent(
     val main: Boolean = false,
     val sponsored: Boolean = false,
     val editorVisibility: Boolean = true,
+    val messagePopup: Boolean = false,
+    val message: String = "",
 )
 
 @Page
@@ -301,13 +304,25 @@ fun CreateScreen() {
                             )
                             if (result) {
                                 println("Successful addPost()")
+                                uiEvent = uiEvent.copy(
+                                    messagePopup = true,
+                                    message = "Successful addPost()"
+                                )
                             }
                         }
                     } else {
-                        println("Please fill out all fields.")
+                        uiEvent = uiEvent.copy(
+                            messagePopup = true,
+                            message = "Please fill out all fields."
+                        )
                     }
                 }
             }
+        }
+    }
+    if (uiEvent.messagePopup) {
+        MessagePopup(message = uiEvent.message) {
+            uiEvent = uiEvent.copy(messagePopup = false)
         }
     }
 }
