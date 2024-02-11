@@ -15,6 +15,7 @@ import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.Id
 import com.example.blogmultiplatform.util.Res
 import com.example.blogmultiplatform.util.checkUserExistence
+import com.example.blogmultiplatform.util.noBorder
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextAlign
@@ -26,7 +27,6 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.background
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
-import com.varabyte.kobweb.compose.ui.modifiers.border
 import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
 import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.cursor
@@ -136,16 +136,7 @@ fun LoginScreen() {
                     .fontFamily(FONT_FAMILY)
                     .fontWeight(FontWeight.Medium)
                     .fontSize(14.px)
-                    .border(
-                        width = 0.px,
-                        style = LineStyle.None,
-                        color = Colors.Transparent,
-                    )
-                    .outline(
-                        width = 0.px,
-                        style = LineStyle.None,
-                        color = Colors.Transparent,
-                    )
+                    .noBorder()
                     .padding(leftRight = 20.px)
                     .cursor(Cursor.Pointer)
                     .onClick {

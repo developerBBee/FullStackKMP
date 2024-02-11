@@ -11,13 +11,18 @@ import com.example.blogmultiplatform.models.RandomJoke
 import com.example.blogmultiplatform.navigation.Screen
 import com.varabyte.kobweb.browser.http.http
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.graphics.Colors
+import com.varabyte.kobweb.compose.ui.modifiers.border
+import com.varabyte.kobweb.compose.ui.modifiers.outline
 import com.varabyte.kobweb.compose.ui.modifiers.rotate
 import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.animation.Keyframes
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
+import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.deg
+import org.jetbrains.compose.web.css.px
 import org.w3c.dom.get
 import org.w3c.dom.set
 import kotlin.js.Date
@@ -76,3 +81,15 @@ fun getLocalJoke(): RandomJoke = runCatching {
     println("getLocalJoke() error ${e.message}")
     RandomJoke(id = -1, joke = "Unexpected Error.")
 }
+
+fun Modifier.noBorder(): Modifier = this
+    .border(
+        width = 0.px,
+        style = LineStyle.None,
+        color = Colors.Transparent
+    )
+    .outline(
+        width = 0.px,
+        style = LineStyle.None,
+        color = Colors.Transparent
+)

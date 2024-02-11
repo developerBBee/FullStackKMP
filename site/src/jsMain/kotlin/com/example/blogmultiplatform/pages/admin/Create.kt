@@ -14,6 +14,7 @@ import com.example.blogmultiplatform.util.Constants
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.Id
 import com.example.blogmultiplatform.util.isUserLoggedIn
+import com.example.blogmultiplatform.util.noBorder
 import com.varabyte.kobweb.browser.file.loadDataUrlFromDisk
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.FontWeight
@@ -30,7 +31,6 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
-import com.varabyte.kobweb.compose.ui.modifiers.border
 import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
 import com.varabyte.kobweb.compose.ui.modifiers.classNames
 import com.varabyte.kobweb.compose.ui.modifiers.color
@@ -48,7 +48,6 @@ import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.compose.ui.modifiers.maxHeight
 import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.onClick
-import com.varabyte.kobweb.compose.ui.modifiers.outline
 import com.varabyte.kobweb.compose.ui.modifiers.overflow
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.modifiers.resize
@@ -69,7 +68,6 @@ import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
 import kotlinx.browser.document
 import org.jetbrains.compose.web.attributes.InputType
-import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Button
@@ -197,16 +195,7 @@ fun CreateScreen() {
                         .margin(topBottom = 12.px)
                         .backgroundColor(Theme.LightGray.rgb)
                         .borderRadius(r = 4.px)
-                        .border(
-                            width = 0.px,
-                            style = LineStyle.None,
-                            color = Colors.Transparent
-                        )
-                        .outline(
-                            width = 0.px,
-                            style = LineStyle.None,
-                            color = Colors.Transparent
-                        )
+                        .noBorder()
                         .fontFamily(FONT_FAMILY),
                     placeholder = "Title",
                     onValueChanged = { titleText = it }
@@ -220,16 +209,7 @@ fun CreateScreen() {
                         .margin(bottom = 12.px)
                         .backgroundColor(Theme.LightGray.rgb)
                         .borderRadius(r = 4.px)
-                        .border(
-                            width = 0.px,
-                            style = LineStyle.None,
-                            color = Colors.Transparent
-                        )
-                        .outline(
-                            width = 0.px,
-                            style = LineStyle.None,
-                            color = Colors.Transparent
-                        )
+                        .noBorder()
                         .fontFamily(FONT_FAMILY),
                     placeholder = "Subtitle",
                     onValueChanged = { subtitleText = it }
@@ -274,31 +254,7 @@ fun CreateScreen() {
                     editorVisibilityChange = { editorVisibility = !editorVisibility }
                 )
                 Editor(editorVisibility = editorVisibility)
-                Button(
-                    attrs = Modifier
-                        .onClick {  }
-                        .fillMaxWidth()
-                        .height(54.px)
-                        .margin(top = 24.px)
-                        .backgroundColor(Theme.Primary.rgb)
-                        .color(Colors.White)
-                        .borderRadius(r = 4.px)
-                        .border(
-                            width = 0.px,
-                            style = LineStyle.None,
-                            color = Colors.Transparent
-                        )
-                        .outline(
-                            width = 0.px,
-                            style = LineStyle.None,
-                            color = Colors.Transparent
-                        )
-                        .fontFamily(FONT_FAMILY)
-                        .fontSize(16.px)
-                        .toAttrs()
-                ) {
-                    SpanText(text = "Create")
-                }
+                CreateButton {}
             }
         }
     }
@@ -383,16 +339,7 @@ fun ThumbnailUploader(
                 .padding(leftRight = 20.px)
                 .backgroundColor(Theme.LightGray.rgb)
                 .borderRadius(r = 4.px)
-                .border(
-                    width = 0.px,
-                    style = LineStyle.None,
-                    color = Colors.Transparent
-                )
-                .outline(
-                    width = 0.px,
-                    style = LineStyle.None,
-                    color = Colors.Transparent
-                )
+                .noBorder()
                 .fontFamily(FONT_FAMILY)
                 .fontSize(16.px),
             enabled = thumbnailInputEnabled,
@@ -413,16 +360,7 @@ fun ThumbnailUploader(
                 .backgroundColor(if (thumbnailInputEnabled) Theme.Primary.rgb else Theme.Gray.rgb)
                 .color(if (thumbnailInputEnabled) Theme.White.rgb else Theme.DarkGray.rgb)
                 .borderRadius(r = 4.px)
-                .border(
-                    width = 0.px,
-                    style = LineStyle.None,
-                    color = Colors.Transparent
-                )
-                .outline(
-                    width = 0.px,
-                    style = LineStyle.None,
-                    color = Colors.Transparent
-                )
+                .noBorder()
                 .fontFamily(FONT_FAMILY)
                 .fontWeight(FontWeight.Medium)
                 .fontSize(14.px)
@@ -475,16 +413,7 @@ fun EditorControls(
                         .color(
                             if (editorVisibility) Theme.DarkGray.rgb else Colors.White
                         )
-                        .border(
-                            width = 0.px,
-                            style = LineStyle.None,
-                            color = Colors.Transparent
-                        )
-                        .outline(
-                            width = 0.px,
-                            style = LineStyle.None,
-                            color = Colors.Transparent
-                        )
+                        .noBorder()
                         .onClick { editorVisibilityChange() }
                         .toAttrs()
                 ) {
@@ -533,16 +462,7 @@ fun Editor(editorVisibility: Boolean) {
                 .padding(all = 20.px)
                 .backgroundColor(Theme.LightGray.rgb)
                 .borderRadius(r = 4.px)
-                .border(
-                    width = 0.px,
-                    style = LineStyle.None,
-                    color = Colors.Transparent
-                )
-                .outline(
-                    width = 0.px,
-                    style = LineStyle.None,
-                    color = Colors.Transparent
-                )
+                .noBorder()
                 .visibility(
                     visibility = if (editorVisibility) Visibility.Visible else Visibility.Hidden
                 )
@@ -562,16 +482,7 @@ fun Editor(editorVisibility: Boolean) {
                 .padding(all = 20.px)
                 .backgroundColor(Theme.LightGray.rgb)
                 .borderRadius(r = 4.px)
-                .border(
-                    width = 0.px,
-                    style = LineStyle.None,
-                    color = Colors.Transparent
-                )
-                .outline(
-                    width = 0.px,
-                    style = LineStyle.None,
-                    color = Colors.Transparent
-                )
+                .noBorder()
                 .visibility(
                     if (editorVisibility) Visibility.Hidden else Visibility.Visible
                 )
@@ -579,5 +490,27 @@ fun Editor(editorVisibility: Boolean) {
                 .scrollBehavior(ScrollBehavior.Smooth)
                 .toAttrs()
         )
+    }
+}
+
+@Composable
+fun CreateButton(
+    onClick: () -> Unit
+) {
+    Button(
+        attrs = Modifier
+            .onClick { onClick() }
+            .fillMaxWidth()
+            .height(54.px)
+            .margin(top = 24.px)
+            .backgroundColor(Theme.Primary.rgb)
+            .color(Colors.White)
+            .borderRadius(r = 4.px)
+            .noBorder()
+            .fontFamily(FONT_FAMILY)
+            .fontSize(16.px)
+            .toAttrs()
+    ) {
+        SpanText(text = "Create")
     }
 }
