@@ -7,8 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.components.LoadingIndicator
+import com.example.blogmultiplatform.models.Post
 import com.example.blogmultiplatform.models.RandomJoke
 import com.example.blogmultiplatform.navigation.Screen
+import com.varabyte.kobweb.browser.api
 import com.varabyte.kobweb.browser.http.http
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
@@ -19,6 +21,7 @@ import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.animation.Keyframes
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.deg
@@ -93,3 +96,15 @@ fun Modifier.noBorder(): Modifier = this
         style = LineStyle.None,
         color = Colors.Transparent
 )
+
+suspend fun addPost(post: Post): Boolean {
+    return runCatching {
+        window.api.tryPost(
+            apiPath = "addpost",
+            body = Json.encodeToString(post).encodeToByteArray()
+        )?.decodeToString().toBoolean()
+    }.getOrElse { e ->
+        println(e.message)
+        false
+    }
+}

@@ -4,15 +4,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.components.AdminPageLayout
 import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.EditorKey
+import com.example.blogmultiplatform.models.Post
 import com.example.blogmultiplatform.models.Theme
 import com.example.blogmultiplatform.styles.EditorKeyStyle
 import com.example.blogmultiplatform.util.Constants
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.Id
+import com.example.blogmultiplatform.util.addPost
 import com.example.blogmultiplatform.util.isUserLoggedIn
 import com.example.blogmultiplatform.util.noBorder
 import com.varabyte.kobweb.browser.file.loadDataUrlFromDisk
@@ -67,6 +70,8 @@ import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
 import kotlinx.browser.document
+import kotlinx.browser.localStorage
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.A
@@ -76,6 +81,24 @@ import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.TextArea
 import org.jetbrains.compose.web.dom.Ul
+import org.w3c.dom.HTMLTextAreaElement
+import org.w3c.dom.get
+import kotlin.js.Date
+
+data class CreatePageUiEvent(
+    val id: String = "",
+    val title: String = "",
+    val subtitle: String = "",
+    val thumbnail: String = "",
+    val thumbnailFileName: String = "",
+    val thumbnailInputEnabled: Boolean = true,
+    val content: String = "",
+    val category: Category = Category.Programing,
+    val popular: Boolean = false,
+    val main: Boolean = false,
+    val sponsored: Boolean = false,
+    val editorVisibility: Boolean = true,
+)
 
 @Page
 @Composable
@@ -87,17 +110,11 @@ fun CreatePage() {
 
 @Composable
 fun CreateScreen() {
+    val scope = rememberCoroutineScope()
+
     val breakpoint = rememberBreakpoint()
     val isLarge: Boolean = (breakpoint > Breakpoint.MD)
-    var popularSwitch by remember { mutableStateOf(false) }
-    var mainSwitch by remember { mutableStateOf(false) }
-    var sponsoredSwitch by remember { mutableStateOf(false) }
-    var titleText by remember { mutableStateOf("") }
-    var subtitleText by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf(Category.Programing) }
-    var fileName by remember { mutableStateOf("") }
-    var thumbnailInputEnabled by remember { mutableStateOf(false) }
-    var editorVisibility by remember { mutableStateOf(true) }
+    var uiEvent by remember { mutableStateOf(CreatePageUiEvent()) }
 
     AdminPageLayout {
         Box(
@@ -129,8 +146,8 @@ fun CreateScreen() {
                     ) {
                         Switch(
                             modifier = Modifier.margin(right = 8.px),
-                            checked = popularSwitch,
-                            onCheckedChange = { popularSwitch = it },
+                            checked = uiEvent.popular,
+                            onCheckedChange = { uiEvent = uiEvent.copy(popular = it) },
                             size = SwitchSize.LG
                         )
                         SpanText(
@@ -151,8 +168,8 @@ fun CreateScreen() {
                     ) {
                         Switch(
                             modifier = Modifier.margin(right = 8.px),
-                            checked = mainSwitch,
-                            onCheckedChange = { mainSwitch = it },
+                            checked = uiEvent.main,
+                            onCheckedChange = { uiEvent = uiEvent.copy(main = it) },
                             size = SwitchSize.LG
                         )
                         SpanText(
@@ -173,8 +190,8 @@ fun CreateScreen() {
                     ) {
                         Switch(
                             modifier = Modifier.margin(right = 8.px),
-                            checked = sponsoredSwitch,
-                            onCheckedChange = { sponsoredSwitch = it },
+                            checked = uiEvent.sponsored,
+                            onCheckedChange = { uiEvent = uiEvent.copy(sponsored = it) },
                             size = SwitchSize.LG
                         )
                         SpanText(
@@ -188,7 +205,7 @@ fun CreateScreen() {
                 }
                 Input(
                     type = InputType.Text,
-                    value = titleText,
+                    value = uiEvent.title,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(54.px)
@@ -198,11 +215,11 @@ fun CreateScreen() {
                         .noBorder()
                         .fontFamily(FONT_FAMILY),
                     placeholder = "Title",
-                    onValueChanged = { titleText = it }
+                    onValueChanged = { uiEvent = uiEvent.copy(title = it) }
                 )
                 Input(
                     type = InputType.Text,
-                    value = subtitleText,
+                    value = uiEvent.subtitle,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(54.px)
@@ -212,11 +229,11 @@ fun CreateScreen() {
                         .noBorder()
                         .fontFamily(FONT_FAMILY),
                     placeholder = "Subtitle",
-                    onValueChanged = { subtitleText = it }
+                    onValueChanged = { uiEvent = uiEvent.copy(subtitle = it) }
                 )
                 CategoryDropdown(
-                    selectedCategory = selectedCategory,
-                    onCategorySelect = { selectedCategory = it }
+                    selectedCategory = uiEvent.category,
+                    onCategorySelect = { uiEvent = uiEvent.copy(category = it) }
                 )
                 Row(
                     modifier = Modifier
@@ -227,8 +244,8 @@ fun CreateScreen() {
                 ) {
                     Switch(
                         modifier = Modifier.margin(right = 8.px),
-                        checked = !thumbnailInputEnabled,
-                        onCheckedChange = { thumbnailInputEnabled = !it },
+                        checked = !uiEvent.thumbnailInputEnabled,
+                        onCheckedChange = { uiEvent = uiEvent.copy(thumbnailInputEnabled = !it) },
                         size = SwitchSize.MD
                     )
                     SpanText(
@@ -240,21 +257,56 @@ fun CreateScreen() {
                     )
                 }
                 ThumbnailUploader(
-                    thumbnail = fileName,
-                    thumbnailInputEnabled = thumbnailInputEnabled,
+                    thumbnail = uiEvent.thumbnailFileName,
+                    thumbnailInputEnabled = uiEvent.thumbnailInputEnabled,
                     onThumbnailSelect = { filename, file ->
-                        fileName = filename
-                        println(filename)
-                        println(file)
+                        uiEvent = uiEvent.copy(thumbnail = file, thumbnailFileName = filename)
                     }
                 )
                 EditorControls(
                     breakpoint = breakpoint,
-                    editorVisibility = editorVisibility,
-                    editorVisibilityChange = { editorVisibility = !editorVisibility }
+                    editorVisibility = uiEvent.editorVisibility,
+                    editorVisibilityChange = {
+                        uiEvent = uiEvent.copy(editorVisibility = !uiEvent.editorVisibility)
+                    }
                 )
-                Editor(editorVisibility = editorVisibility)
-                CreateButton {}
+                Editor(editorVisibility = uiEvent.editorVisibility)
+                CreateButton {
+                    uiEvent = uiEvent.copy(
+                        content = (document.getElementById(Id.editor) as HTMLTextAreaElement).value
+                    )
+                    if (!uiEvent.thumbnailInputEnabled) {
+                        uiEvent = uiEvent.copy(thumbnail = "")
+                    }
+                    if (
+                        uiEvent.title.isNotEmpty() &&
+                        uiEvent.subtitle.isNotEmpty() &&
+                        uiEvent.thumbnail.isNotEmpty() &&
+                        uiEvent.content.isNotEmpty()
+                    ) {
+                        scope.launch {
+                            val result = addPost(
+                                Post(
+                                    author = localStorage.get("username").toString(),
+                                    title = uiEvent.title,
+                                    subtitle = uiEvent.subtitle,
+                                    date = Date.now().toLong(),
+                                    thumbnail = uiEvent.thumbnail,
+                                    content = uiEvent.content,
+                                    category = uiEvent.category,
+                                    popular = uiEvent.popular,
+                                    main = uiEvent.main,
+                                    sponsored = uiEvent.sponsored,
+                                )
+                            )
+                            if (result) {
+                                println("Successful addPost()")
+                            }
+                        }
+                    } else {
+                        println("Please fill out all fields.")
+                    }
+                }
             }
         }
     }
