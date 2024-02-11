@@ -1,11 +1,10 @@
 package com.example.blogmultiplatform.models
 
 import kotlinx.serialization.Serializable
-import org.bson.codecs.ObjectIdGenerator
 
 @Serializable
 actual data class Post(
-    actual val _id: String = ObjectIdGenerator().generate().toString(),
+    actual val _id: String,
     actual val author: String,
     actual val date: Long,
     actual val title: String,
