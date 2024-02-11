@@ -10,7 +10,7 @@ import com.varabyte.kobweb.silk.components.style.ComponentStyle
 import com.varabyte.kobweb.silk.components.style.hover
 import org.jetbrains.compose.web.css.ms
 
-val EditorKeyStyle by ComponentStyle {
+val EditorControlStyle by ComponentStyle {
     base {
         Modifier
             .backgroundColor(Colors.Transparent)

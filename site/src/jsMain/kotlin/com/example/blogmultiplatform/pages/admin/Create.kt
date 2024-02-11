@@ -9,15 +9,16 @@ import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.components.AdminPageLayout
 import com.example.blogmultiplatform.components.MessagePopup
 import com.example.blogmultiplatform.models.Category
-import com.example.blogmultiplatform.models.EditorKey
+import com.example.blogmultiplatform.models.EditorControl
 import com.example.blogmultiplatform.models.Post
 import com.example.blogmultiplatform.models.Theme
 import com.example.blogmultiplatform.navigation.Screen
-import com.example.blogmultiplatform.styles.EditorKeyStyle
+import com.example.blogmultiplatform.styles.EditorControlStyle
 import com.example.blogmultiplatform.util.Constants
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.Id
 import com.example.blogmultiplatform.util.addPost
+import com.example.blogmultiplatform.util.applyControlStyle
 import com.example.blogmultiplatform.util.isUserLoggedIn
 import com.example.blogmultiplatform.util.noBorder
 import com.varabyte.kobweb.browser.file.loadDataUrlFromDisk
@@ -459,8 +460,10 @@ fun EditorControls(
                     .borderRadius(r = 4.px)
                     .height(54.px)
             ) {
-                EditorKey.entries.forEach { editorKey ->
-                    EditorKeyView(key = editorKey)
+                EditorControl.entries.forEach { editorControl ->
+                    EditorControlView(control = editorControl) {
+                        applyControlStyle(editorControl)
+                    }
                 }
             }
             Box(contentAlignment = Alignment.CenterEnd) {
@@ -498,19 +501,22 @@ fun EditorControls(
 }
 
 @Composable
-fun EditorKeyView(key: EditorKey) {
+fun EditorControlView(
+    control: EditorControl,
+    onClick: () -> Unit,
+) {
     Box(
-        modifier = EditorKeyStyle.toModifier()
+        modifier = EditorControlStyle.toModifier()
             .fillMaxHeight()
             .padding(leftRight = 12.px)
             .borderRadius(r = 4.px)
             .cursor(Cursor.Pointer)
-            .onClick {  },
+            .onClick { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Image(
-            src = key.icon,
-            description = "${key.name} Icon"
+            src = control.icon,
+            description = "${control.name} Icon"
         )
     }
 }
