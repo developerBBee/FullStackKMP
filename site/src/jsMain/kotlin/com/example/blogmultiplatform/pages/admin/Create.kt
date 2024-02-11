@@ -109,8 +109,7 @@ data class CreatePageUiEvent(
     val messagePopup: Boolean = false,
     val message: String = "",
     val linkPopup: Boolean = false,
-    val linkHref: String = "",
-    val linkTitle: String = "",
+    val imagePopup: Boolean = false,
 )
 
 @Page
@@ -285,6 +284,7 @@ fun CreateScreen() {
                         uiEvent = uiEvent.copy(editorVisibility = !uiEvent.editorVisibility)
                     },
                     onLinkClick = { uiEvent = uiEvent.copy(linkPopup = true) },
+                    onImageClick = { uiEvent = uiEvent.copy(imagePopup = true) },
                 )
                 Editor(editorVisibility = uiEvent.editorVisibility)
                 CreateButton {
@@ -336,13 +336,29 @@ fun CreateScreen() {
     }
     if (uiEvent.linkPopup) {
         LinkPopup(
+            controlPopup = EditorControl.Link,
             onDialogDismiss = { uiEvent = uiEvent.copy(linkPopup = false) },
-            onLinkAdded = { href, title ->
+            onAddClick = { href, title ->
                 applyStyle(
                     ControlStyle.Link(
                         selectedText = getSelectedText(),
                         href = href,
-                        desc = title,
+                        title = title,
+                    )
+                )
+            },
+        )
+    }
+    if (uiEvent.imagePopup) {
+        LinkPopup(
+            controlPopup = EditorControl.Image,
+            onDialogDismiss = { uiEvent = uiEvent.copy(imagePopup = false) },
+            onAddClick = { url, desc ->
+                applyStyle(
+                    ControlStyle.Image(
+                        selectedText = getSelectedText(),
+                        imageLink = url,
+                        desc = desc,
                     )
                 )
             },
@@ -471,6 +487,7 @@ fun EditorControls(
     editorVisibility: Boolean,
     editorVisibilityChange: () -> Unit,
     onLinkClick: () -> Unit,
+    onImageClick: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         SimpleGrid(
@@ -488,6 +505,7 @@ fun EditorControls(
                         applyControlStyle(
                             editorControl = editorControl,
                             onLinkClick = onLinkClick,
+                            onImageClick = onImageClick,
                         )
                     }
                 }

@@ -143,17 +143,16 @@ fun applyStyle(controlStyle: ControlStyle) = getEditor().apply {
 fun applyControlStyle(
     editorControl: EditorControl,
     onLinkClick: () -> Unit,
+    onImageClick: () -> Unit,
 ) {
     when (editorControl) {
         EditorControl.Bold -> applyStyle(ControlStyle.Bold(getSelectedText()))
         EditorControl.Italic -> applyStyle(ControlStyle.Italic(getSelectedText()))
-        EditorControl.Link -> {
-            onLinkClick()
-        }
+        EditorControl.Link -> { onLinkClick() }
         EditorControl.Title -> applyStyle(ControlStyle.Title(getSelectedText()))
         EditorControl.Subtitle -> applyStyle(ControlStyle.Subtitle(getSelectedText()))
         EditorControl.Quote -> applyStyle(ControlStyle.Quote(getSelectedText()))
         EditorControl.Code -> applyStyle(ControlStyle.Code(getSelectedText()))
-        EditorControl.Image -> {}
+        EditorControl.Image -> { onImageClick() }
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.blogmultiplatform.models.EditorControl
 import com.example.blogmultiplatform.models.Theme
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.noBorder
@@ -79,11 +80,12 @@ fun MessagePopup(
 
 @Composable
 fun LinkPopup(
+    controlPopup: EditorControl,
     onDialogDismiss: () -> Unit,
-    onLinkAdded: (String, String) -> Unit,
+    onAddClick: (String, String) -> Unit,
 ) {
-    var linkHrefText by remember { mutableStateOf("") }
-    var linkTitelText by remember { mutableStateOf("") }
+    var source by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -118,9 +120,9 @@ fun LinkPopup(
                     .noBorder()
                     .backgroundColor(Theme.LightGray.rgb),
                 type = InputType.Text,
-                value = linkHrefText,
-                placeholder = "Href",
-                onValueChanged = { linkHrefText = it }
+                value = source,
+                placeholder = if (controlPopup == EditorControl.Link) "Href" else "Image URL",
+                onValueChanged = { source = it }
             )
             Input(
                 modifier = Modifier
@@ -134,14 +136,14 @@ fun LinkPopup(
                     .noBorder()
                     .backgroundColor(Theme.LightGray.rgb),
                 type = InputType.Text,
-                value = linkTitelText,
-                placeholder = "Title",
-                onValueChanged = { linkTitelText = it }
+                value = title,
+                placeholder = if (controlPopup == EditorControl.Link) "Title" else "Description",
+                onValueChanged = { title = it }
             )
             Button(
                 attrs = Modifier
                     .onClick {
-                        onLinkAdded(linkHrefText, linkTitelText)
+                        onAddClick(source, title)
                         onDialogDismiss()
                     }
                     .fillMaxWidth()
