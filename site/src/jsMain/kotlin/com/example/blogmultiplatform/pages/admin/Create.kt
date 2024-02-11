@@ -12,6 +12,7 @@ import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.EditorKey
 import com.example.blogmultiplatform.models.Post
 import com.example.blogmultiplatform.models.Theme
+import com.example.blogmultiplatform.navigation.Screen
 import com.example.blogmultiplatform.styles.EditorKeyStyle
 import com.example.blogmultiplatform.util.Constants
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
@@ -60,6 +61,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.visibility
 import com.varabyte.kobweb.compose.ui.thenIf
 import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.core.Page
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.forms.Input
 import com.varabyte.kobweb.silk.components.forms.Switch
 import com.varabyte.kobweb.silk.components.forms.SwitchSize
@@ -114,9 +116,11 @@ fun CreatePage() {
 @Composable
 fun CreateScreen() {
     val scope = rememberCoroutineScope()
+    val context = rememberPageContext()
 
     val breakpoint = rememberBreakpoint()
     val isLarge: Boolean = (breakpoint > Breakpoint.MD)
+
     var uiEvent by remember { mutableStateOf(CreatePageUiEvent()) }
 
     AdminPageLayout {
@@ -303,11 +307,7 @@ fun CreateScreen() {
                                 )
                             )
                             if (result) {
-                                println("Successful addPost()")
-                                uiEvent = uiEvent.copy(
-                                    messagePopup = true,
-                                    message = "Successful addPost()"
-                                )
+                                context.router.navigateTo(Screen.AdminSuccess.route)
                             }
                         }
                     } else {
