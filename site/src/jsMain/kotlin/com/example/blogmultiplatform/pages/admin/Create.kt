@@ -7,8 +7,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.components.AdminPageLayout
+import com.example.blogmultiplatform.components.LinkPopup
 import com.example.blogmultiplatform.components.MessagePopup
 import com.example.blogmultiplatform.models.Category
+import com.example.blogmultiplatform.models.ControlStyle
 import com.example.blogmultiplatform.models.EditorControl
 import com.example.blogmultiplatform.models.Post
 import com.example.blogmultiplatform.models.Theme
@@ -19,6 +21,8 @@ import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.Id
 import com.example.blogmultiplatform.util.addPost
 import com.example.blogmultiplatform.util.applyControlStyle
+import com.example.blogmultiplatform.util.applyStyle
+import com.example.blogmultiplatform.util.getSelectedText
 import com.example.blogmultiplatform.util.isUserLoggedIn
 import com.example.blogmultiplatform.util.noBorder
 import com.varabyte.kobweb.browser.file.loadDataUrlFromDisk
@@ -104,6 +108,9 @@ data class CreatePageUiEvent(
     val editorVisibility: Boolean = true,
     val messagePopup: Boolean = false,
     val message: String = "",
+    val linkPopup: Boolean = false,
+    val linkHref: String = "",
+    val linkTitle: String = "",
 )
 
 @Page
@@ -276,7 +283,8 @@ fun CreateScreen() {
                     editorVisibility = uiEvent.editorVisibility,
                     editorVisibilityChange = {
                         uiEvent = uiEvent.copy(editorVisibility = !uiEvent.editorVisibility)
-                    }
+                    },
+                    onLinkClick = { uiEvent = uiEvent.copy(linkPopup = true) },
                 )
                 Editor(editorVisibility = uiEvent.editorVisibility)
                 CreateButton {
@@ -325,6 +333,20 @@ fun CreateScreen() {
         MessagePopup(message = uiEvent.message) {
             uiEvent = uiEvent.copy(messagePopup = false)
         }
+    }
+    if (uiEvent.linkPopup) {
+        LinkPopup(
+            onDialogDismiss = { uiEvent = uiEvent.copy(linkPopup = false) },
+            onLinkAdded = { href, title ->
+                applyStyle(
+                    ControlStyle.Link(
+                        selectedText = getSelectedText(),
+                        href = href,
+                        desc = title,
+                    )
+                )
+            },
+        )
     }
 }
 
@@ -448,6 +470,7 @@ fun EditorControls(
     breakpoint: Breakpoint,
     editorVisibility: Boolean,
     editorVisibilityChange: () -> Unit,
+    onLinkClick: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         SimpleGrid(
@@ -462,7 +485,10 @@ fun EditorControls(
             ) {
                 EditorControl.entries.forEach { editorControl ->
                     EditorControlView(control = editorControl) {
-                        applyControlStyle(editorControl)
+                        applyControlStyle(
+                            editorControl = editorControl,
+                            onLinkClick = onLinkClick,
+                        )
                     }
                 }
             }

@@ -140,11 +140,16 @@ fun applyStyle(controlStyle: ControlStyle) = getEditor().apply {
     }
 }
 
-fun applyControlStyle(editorControl: EditorControl) {
+fun applyControlStyle(
+    editorControl: EditorControl,
+    onLinkClick: () -> Unit,
+) {
     when (editorControl) {
         EditorControl.Bold -> applyStyle(ControlStyle.Bold(getSelectedText()))
         EditorControl.Italic -> applyStyle(ControlStyle.Italic(getSelectedText()))
-        EditorControl.Link -> {}
+        EditorControl.Link -> {
+            onLinkClick()
+        }
         EditorControl.Title -> applyStyle(ControlStyle.Title(getSelectedText()))
         EditorControl.Subtitle -> applyStyle(ControlStyle.Subtitle(getSelectedText()))
         EditorControl.Quote -> applyStyle(ControlStyle.Quote(getSelectedText()))
