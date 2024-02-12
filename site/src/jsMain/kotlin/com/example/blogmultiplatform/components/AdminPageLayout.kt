@@ -7,7 +7,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.util.Constants
-import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
@@ -27,8 +26,6 @@ fun AdminPageLayout(content: @Composable () -> Unit) {
         Column(
             modifier = Modifier.fillMaxSize()
                 .maxWidth(Constants.PAGE_WIDTH.px),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Top
         ) {
             SidePanel { overflowMenuOpened = true }
             if (overflowMenuOpened) {
@@ -39,7 +36,7 @@ fun AdminPageLayout(content: @Composable () -> Unit) {
                     }
                 }
             }
+            content()
         }
-        content()
     }
 }

@@ -136,12 +136,8 @@ fun CreateScreen() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = if (isLarge) 50.px else (50 + Constants.COLLAPSED_PANEL_HEIGHT).px,
-                    bottom = 50.px,
-                    left = if (isLarge) Constants.SIDE_PANEL_WIDTH.px else 0.px,
-                    right = 0.px,
-                ),
+                .margin(topBottom = 50.px)
+                .padding(left = if (isLarge) Constants.SIDE_PANEL_WIDTH.px else 0.px),
             contentAlignment = Alignment.TopCenter
         ) {
             Column(
