@@ -156,3 +156,5 @@ fun applyControlStyle(
         EditorControl.Image -> { onImageClick() }
     }
 }
+
+fun Long.parseDateString() = Date(this).toLocaleDateString()

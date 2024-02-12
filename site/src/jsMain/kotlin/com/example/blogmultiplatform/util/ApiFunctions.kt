@@ -40,14 +40,18 @@ suspend fun checkUserId(id: String): Boolean {
 
 suspend fun fetchMyPosts(
     skip: Int,
-    onSuccess: (ApiListResponse) -> Unit,
+    onSuccess: (ApiListResponse.Success) -> Unit,
     onError: (Throwable) -> Unit,
 ) {
     runCatching {
         window.api.tryGet(
             apiPath = "readmyposts?skip=$skip&author=${localStorage["username"]}"
         )?.decodeToString()?.let { result ->
-            onSuccess(Json.decodeFromString(result))
+            runCatching {
+                onSuccess(Json.decodeFromString(result))
+            }.onFailure {
+                throw Exception(Json.decodeFromString<ApiListResponse.Error>(result).message)
+            }
         } ?: throw Exception(message = "null result")
     }.getOrElse { e ->
         onError(e)
