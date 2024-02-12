@@ -49,8 +49,8 @@ enum class Theme(
         rgb = rgb(255, 236, 69)
     ),
     Red(
-        hex = "#00FF94",
-        rgb = rgb(0, 255, 148)
+        hex = "#FF6359",
+        rgb = rgb(255, 99, 89)
     ),
     Purple(
         hex = "#8B6DFF",
