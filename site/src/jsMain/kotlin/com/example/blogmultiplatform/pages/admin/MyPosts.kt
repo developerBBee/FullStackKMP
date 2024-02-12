@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.components.AdminPageLayout
 import com.example.blogmultiplatform.components.Posts
@@ -13,11 +14,13 @@ import com.example.blogmultiplatform.components.SearchBar
 import com.example.blogmultiplatform.models.PostWithoutDetails
 import com.example.blogmultiplatform.models.Theme
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
+import com.example.blogmultiplatform.util.Constants.POST_PER_PAGE
 import com.example.blogmultiplatform.util.Constants.SIDE_PANEL_WIDTH
 import com.example.blogmultiplatform.util.fetchMyPosts
 import com.example.blogmultiplatform.util.isUserLoggedIn
 import com.example.blogmultiplatform.util.noBorder
 import com.varabyte.kobweb.compose.css.FontWeight
+import com.varabyte.kobweb.compose.css.Visibility
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
@@ -36,6 +39,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.compose.ui.modifiers.padding
+import com.varabyte.kobweb.compose.ui.modifiers.visibility
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.forms.Button
 import com.varabyte.kobweb.silk.components.forms.Switch
@@ -43,6 +47,7 @@ import com.varabyte.kobweb.silk.components.forms.SwitchSize
 import com.varabyte.kobweb.silk.components.style.breakpoint.Breakpoint
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 
@@ -56,15 +61,26 @@ fun MyPostsPage() {
 
 @Composable
 fun MyPostsScreen() {
+    val scope = rememberCoroutineScope()
     val breakpoint = rememberBreakpoint()
-    var selectable by remember { mutableStateOf(false) }
-    var text by remember { mutableStateOf("Select") }
+
     val myPosts = remember { mutableStateListOf<PostWithoutDetails>() }
+    val selectedPosts = remember { mutableStateListOf<String>() }
+    var postsToSkip by remember { mutableStateOf(0) }
+    var showMoreVisibility by remember { mutableStateOf(false) }
+    var selectable by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         fetchMyPosts(
-            skip = 0,
-            onSuccess = { apiListResponse -> myPosts.addAll(apiListResponse.data!!) },
+            skip = postsToSkip,
+            onSuccess = { apiListResponse ->
+                apiListResponse.data.also { data ->
+                    myPosts.clear()
+                    myPosts.addAll(data)
+                    postsToSkip += POST_PER_PAGE
+                    showMoreVisibility = data.size >= POST_PER_PAGE
+                }
+            },
             onError = { throwable -> println(throwable.message) }
         )
     }
@@ -90,9 +106,11 @@ fun MyPostsScreen() {
             }
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(90.percent)
+                    .fillMaxWidth(
+                        if (breakpoint > Breakpoint.MD) 80.percent else 90.percent
+                    )
                     .margin(bottom = 24.px),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -100,16 +118,22 @@ fun MyPostsScreen() {
                         modifier = Modifier.margin(right = 8.px),
                         size = SwitchSize.LG,
                         checked = selectable,
-                        onCheckedChange = { selectable = it }
+                        onCheckedChange = {
+                            selectable = it
+                            if (!selectable) {
+                                selectedPosts.clear()
+                            }
+                        }
                     )
                     SpanText(
                         modifier = Modifier
                             .color(if (selectable) Colors.Black else Theme.HalfBlack.rgb),
-                        text = text
+                        text = if (selectable) "${selectedPosts.size} Posts selected" else "Select"
                     )
                 }
                 Button(
                     modifier = Modifier
+                        .margin(right = 20.px)
                         .height(54.px)
                         .padding(leftRight = 24.px)
                         .backgroundColor(Theme.Red.rgb)
@@ -118,13 +142,41 @@ fun MyPostsScreen() {
                         .borderRadius(r = 4.px)
                         .fontFamily(FONT_FAMILY)
                         .fontSize(14.px)
+                        .visibility(
+                            if (selectedPosts.isEmpty()) Visibility.Hidden else Visibility.Visible
+                        )
                         .fontWeight(FontWeight.Medium),
                     onClick = {}
                 ) {
                     SpanText("Delete")
                 }
             }
-            Posts(posts = myPosts)
+            Posts(
+                breakpoint = breakpoint,
+                posts = myPosts,
+                selectable = selectable,
+                onSelect = { selectedPosts.add(it) },
+                deSelect = { selectedPosts.remove(it) },
+                showMoreVisibility = showMoreVisibility,
+            ) {
+                scope.launch {
+                    fetchMyPosts(
+                        skip = postsToSkip,
+                        onSuccess = { apiListResponse ->
+                            apiListResponse.data.also { data ->
+                                if (data.isNotEmpty()) {
+                                    myPosts.addAll(data)
+                                    postsToSkip += POST_PER_PAGE
+                                    showMoreVisibility = data.size >= POST_PER_PAGE
+                                } else {
+                                    showMoreVisibility = false
+                                }
+                            }
+                        },
+                        onError = { throwable -> println(throwable.message) }
+                    )
+                }
+            }
         }
     }
 }
