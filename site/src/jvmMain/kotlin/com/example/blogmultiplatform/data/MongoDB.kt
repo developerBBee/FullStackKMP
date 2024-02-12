@@ -44,6 +44,12 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
             .toList()
     }
 
+    override suspend fun deleteSelectedPosts(posts: List<String>): Boolean {
+        return postCollection
+            .deleteMany(Filters.`in`(Post::_id.name, posts))
+            .wasAcknowledged()
+    }
+
     override suspend fun checkUserExistence(user: User): User? {
         return runCatching {
             userCollection

@@ -43,3 +43,22 @@ suspend fun readMyPosts(context: ApiContext) {
         )
     }
 }
+
+@Api(routeOverride = "deleteselectedposts")
+suspend fun deleteSelectedPosts(context: ApiContext) {
+    runCatching {
+        context.req.body?.decodeToString()
+            ?.let { requestBody ->
+                Json.decodeFromString<List<String>>(requestBody)
+            }
+            ?.let { posts ->
+                context.data.getValue<MongoDB>().deleteSelectedPosts(posts = posts)
+            }
+            ?.let{ result ->
+                context.res.setBodyText(result.toString())
+            } ?: throw Exception("null request")
+    }.onFailure { e ->
+        context.logger.info("deleteSelectedPosts API EXCEPTION: $e")
+        context.res.setBodyText(Json.encodeToString(e.message))
+    }
+}

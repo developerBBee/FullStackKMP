@@ -16,6 +16,7 @@ import com.example.blogmultiplatform.models.Theme
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.Constants.POST_PER_PAGE
 import com.example.blogmultiplatform.util.Constants.SIDE_PANEL_WIDTH
+import com.example.blogmultiplatform.util.deleteSelectedPosts
 import com.example.blogmultiplatform.util.fetchMyPosts
 import com.example.blogmultiplatform.util.isUserLoggedIn
 import com.example.blogmultiplatform.util.noBorder
@@ -146,7 +147,19 @@ fun MyPostsScreen() {
                             if (selectedPosts.isEmpty()) Visibility.Hidden else Visibility.Visible
                         )
                         .fontWeight(FontWeight.Medium),
-                    onClick = {}
+                    onClick = {
+                        scope.launch {
+                            val result = deleteSelectedPosts(ids = selectedPosts)
+                            if (result) {
+                                selectable = false
+                                postsToSkip -= selectedPosts.size
+                                selectedPosts.forEach { deletedPostId ->
+                                    myPosts.removeAll { it._id == deletedPostId }
+                                }
+                                selectedPosts.clear()
+                            }
+                        }
+                    }
                 ) {
                     SpanText("Delete")
                 }

@@ -15,9 +15,9 @@ suspend fun checkUserExistence(user: User): UserWithoutPassword? {
         window.api.tryPost(
             apiPath = "usercheck",
             body = Json.encodeToString(user).encodeToByteArray()
-        )?.decodeToString().let { result ->
-            Json.decodeFromString<UserWithoutPassword>(result.toString())
-        }
+        )?.decodeToString()?.let { result ->
+            Json.decodeFromString<UserWithoutPassword>(result)
+        } ?: throw Exception(message = "null result")
     }.onFailure { e ->
         println("ApiFunctions: checkUserExistence() failed.")
         println(e.message)
@@ -29,9 +29,9 @@ suspend fun checkUserId(id: String): Boolean {
         window.api.tryPost(
             apiPath = "checkuserid",
             body = Json.encodeToString(id).encodeToByteArray()
-        )?.decodeToString().let { result ->
-            Json.decodeFromString<Boolean>(result.toString())
-        }
+        )?.decodeToString()?.let { result ->
+            result.toBoolean()
+        } ?: throw Exception(message = "null result")
     }.getOrElse { e ->
         println(e.message)
         false
@@ -55,5 +55,20 @@ suspend fun fetchMyPosts(
         } ?: throw Exception(message = "null result")
     }.getOrElse { e ->
         onError(e)
+    }
+}
+
+suspend fun deleteSelectedPosts(ids: List<String>): Boolean {
+    return runCatching {
+        window.api.tryPost(
+            apiPath = "deleteselectedposts",
+            body = Json.encodeToString(ids).encodeToByteArray()
+        )?.decodeToString()?.let { result ->
+            Json.decodeFromString<Boolean>(result)
+            result.toBoolean()
+        } ?: throw Exception(message = "null result")
+    }.getOrElse { e ->
+        println(e.message)
+        false
     }
 }
