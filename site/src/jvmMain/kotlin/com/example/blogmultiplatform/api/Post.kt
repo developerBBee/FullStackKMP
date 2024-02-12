@@ -62,3 +62,25 @@ suspend fun deleteSelectedPosts(context: ApiContext) {
         context.res.setBodyText(Json.encodeToString(e.message))
     }
 }
+
+@Api(routeOverride = "searchposts")
+suspend fun searchPostsByTitle(context: ApiContext) {
+    runCatching {
+        context.req.run {
+            ((params["query"] ?: throw Exception("no query")) to (params["skip"]?.toInt() ?: 0))
+                .let { (query, skip) ->
+                    context.data.getValue<MongoDB>().searchPostsByTitle(query = query, skip = skip)
+                }
+                .let{ result ->
+                    context.res.setBodyText(Json.encodeToString(
+                        ApiListResponse.Success(data = result))
+                    )
+                }
+        }
+    }.onFailure { e ->
+        context.logger.info("readMyPosts API EXCEPTION: $e")
+        context.res.setBodyText(Json.encodeToString(
+            ApiListResponse.Error(message = e.message.toString()))
+        )
+    }
+}

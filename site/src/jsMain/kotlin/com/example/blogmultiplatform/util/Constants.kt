@@ -6,6 +6,8 @@ object Constants {
     const val PAGE_WIDTH = 1920
     const val COLLAPSED_PANEL_HEIGHT = 100
     const val POST_PER_PAGE = 8
+
+    const val QUERY_PARAM = "query"
 }
 
 object Res {

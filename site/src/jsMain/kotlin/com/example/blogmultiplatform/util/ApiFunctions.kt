@@ -72,3 +72,24 @@ suspend fun deleteSelectedPosts(ids: List<String>): Boolean {
         false
     }
 }
+
+suspend fun searchPostsByTitle(
+    query: String,
+    skip: Int,
+    onSuccess: (ApiListResponse.Success) -> Unit,
+    onError: (Throwable) -> Unit,
+) {
+    runCatching {
+        window.api.tryGet(
+            apiPath = "searchposts?query=$query&skip=$skip"
+        )?.decodeToString()?.let { result ->
+            runCatching {
+                onSuccess(Json.decodeFromString(result))
+            }.onFailure {
+                throw Exception(Json.decodeFromString<ApiListResponse.Error>(result).message)
+            }
+        }
+    }.getOrElse { e ->
+        onError(e)
+    }
+}

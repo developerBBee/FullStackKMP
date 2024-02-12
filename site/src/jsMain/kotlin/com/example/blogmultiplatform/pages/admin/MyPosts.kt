@@ -13,13 +13,16 @@ import com.example.blogmultiplatform.components.Posts
 import com.example.blogmultiplatform.components.SearchBar
 import com.example.blogmultiplatform.models.PostWithoutDetails
 import com.example.blogmultiplatform.models.Theme
+import com.example.blogmultiplatform.navigation.Screen
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.Constants.POST_PER_PAGE
+import com.example.blogmultiplatform.util.Constants.QUERY_PARAM
 import com.example.blogmultiplatform.util.Constants.SIDE_PANEL_WIDTH
 import com.example.blogmultiplatform.util.deleteSelectedPosts
 import com.example.blogmultiplatform.util.fetchMyPosts
 import com.example.blogmultiplatform.util.isUserLoggedIn
 import com.example.blogmultiplatform.util.noBorder
+import com.example.blogmultiplatform.util.searchPostsByTitle
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.Visibility
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
@@ -42,6 +45,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.modifiers.visibility
 import com.varabyte.kobweb.core.Page
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.forms.Button
 import com.varabyte.kobweb.silk.components.forms.Switch
 import com.varabyte.kobweb.silk.components.forms.SwitchSize
@@ -62,6 +66,7 @@ fun MyPostsPage() {
 
 @Composable
 fun MyPostsScreen() {
+    val context = rememberPageContext()
     val scope = rememberCoroutineScope()
     val breakpoint = rememberBreakpoint()
 
@@ -71,19 +76,45 @@ fun MyPostsScreen() {
     var showMoreVisibility by remember { mutableStateOf(false) }
     var selectable by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        fetchMyPosts(
-            skip = postsToSkip,
-            onSuccess = { apiListResponse ->
-                apiListResponse.data.also { data ->
-                    myPosts.clear()
-                    myPosts.addAll(data)
-                    postsToSkip += POST_PER_PAGE
-                    showMoreVisibility = data.size >= POST_PER_PAGE
-                }
-            },
-            onError = { throwable -> println(throwable.message) }
-        )
+    val hasParams = remember(key1 = context.route) { context.route.params.containsKey(QUERY_PARAM) }
+    var query = remember(key1 = context.route) {
+        runCatching {
+            context.route.params.getValue(QUERY_PARAM)
+        }.getOrElse {
+            ""
+        }
+    }
+
+    LaunchedEffect(key1 = context.route) {
+        postsToSkip = 0
+        if (hasParams) {
+            searchPostsByTitle(
+                query = query,
+                skip = postsToSkip,
+                onSuccess = { apiListResponse ->
+                    apiListResponse.data.also { data ->
+                        myPosts.clear()
+                        myPosts.addAll(data)
+                        postsToSkip += POST_PER_PAGE
+                        showMoreVisibility = data.size >= POST_PER_PAGE
+                    }
+                },
+                onError = { throwable -> println(throwable.message) }
+            )
+        } else {
+            fetchMyPosts(
+                skip = postsToSkip,
+                onSuccess = { apiListResponse ->
+                    apiListResponse.data.also { data ->
+                        myPosts.clear()
+                        myPosts.addAll(data)
+                        postsToSkip += POST_PER_PAGE
+                        showMoreVisibility = data.size >= POST_PER_PAGE
+                    }
+                },
+                onError = { throwable -> println(throwable.message) }
+            )
+        }
     }
 
     AdminPageLayout {
@@ -103,7 +134,13 @@ fun MyPostsScreen() {
                     .margin(bottom = 24.px),
                 contentAlignment = Alignment.Center
             ) {
-                SearchBar {  }
+                SearchBar { searchText ->
+                    context.router.navigateTo(
+                        searchText.takeIf { it.isNotEmpty() }?.let { query ->
+                            Screen.AdminMyPosts.searchByTitle(query = query)
+                        } ?: Screen.AdminMyPosts.route
+                    )
+                }
             }
             Row(
                 modifier = Modifier
@@ -173,21 +210,40 @@ fun MyPostsScreen() {
                 showMoreVisibility = showMoreVisibility,
             ) {
                 scope.launch {
-                    fetchMyPosts(
-                        skip = postsToSkip,
-                        onSuccess = { apiListResponse ->
-                            apiListResponse.data.also { data ->
-                                if (data.isNotEmpty()) {
-                                    myPosts.addAll(data)
-                                    postsToSkip += POST_PER_PAGE
-                                    showMoreVisibility = data.size >= POST_PER_PAGE
-                                } else {
-                                    showMoreVisibility = false
+                    if (hasParams) {
+                        searchPostsByTitle(
+                            query = query,
+                            skip = postsToSkip,
+                            onSuccess = { apiListResponse ->
+                                apiListResponse.data.also { data ->
+                                    if (data.isNotEmpty()) {
+                                        myPosts.addAll(data)
+                                        postsToSkip += POST_PER_PAGE
+                                        showMoreVisibility = data.size >= POST_PER_PAGE
+                                    } else {
+                                        showMoreVisibility = false
+                                    }
                                 }
-                            }
-                        },
-                        onError = { throwable -> println(throwable.message) }
-                    )
+                            },
+                            onError = { throwable -> println(throwable.message) }
+                        )
+                    } else {
+                        fetchMyPosts(
+                            skip = postsToSkip,
+                            onSuccess = { apiListResponse ->
+                                apiListResponse.data.also { data ->
+                                    if (data.isNotEmpty()) {
+                                        myPosts.addAll(data)
+                                        postsToSkip += POST_PER_PAGE
+                                        showMoreVisibility = data.size >= POST_PER_PAGE
+                                    } else {
+                                        showMoreVisibility = false
+                                    }
+                                }
+                            },
+                            onError = { throwable -> println(throwable.message) }
+                        )
+                    }
                 }
             }
         }

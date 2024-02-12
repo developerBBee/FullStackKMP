@@ -33,7 +33,7 @@ import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.px
 
 @Composable
-fun SearchBar(onEnterClick: () -> Unit) {
+fun SearchBar(onEnterClick: (String) -> Unit) {
     var focused by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 
@@ -69,7 +69,7 @@ fun SearchBar(onEnterClick: () -> Unit) {
                 .onFocusOut { focused = false }
                 .onKeyDown {
                     if (it.key == "Enter") {
-                        onEnterClick()
+                        onEnterClick(searchText)
                     }
                 },
             focusBorderColor = Colors.Transparent,
