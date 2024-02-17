@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.models.Theme
+import com.example.blogmultiplatform.util.Id
 import com.example.blogmultiplatform.util.noBorder
 import com.varabyte.kobweb.compose.css.CSSTransition
 import com.varabyte.kobweb.compose.foundation.layout.Row
@@ -16,8 +17,10 @@ import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.border
 import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
 import com.varabyte.kobweb.compose.ui.modifiers.color
+import com.varabyte.kobweb.compose.ui.modifiers.fillMaxSize
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.height
+import com.varabyte.kobweb.compose.ui.modifiers.id
 import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.compose.ui.modifiers.onFocusIn
 import com.varabyte.kobweb.compose.ui.modifiers.onFocusOut
@@ -33,12 +36,15 @@ import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.px
 
 @Composable
-fun SearchBar(onEnterClick: (String) -> Unit) {
+fun SearchBar(
+    modifier: Modifier = Modifier,
+    onEnterClick: (String) -> Unit
+) {
     var focused by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(left = 20.px)
             .height(54.px)
@@ -61,7 +67,8 @@ fun SearchBar(onEnterClick: (String) -> Unit) {
         )
         Input(
             modifier = Modifier
-                .fillMaxWidth()
+                .id(Id.adminSearchBar)
+                .fillMaxSize()
                 .color(Colors.Black)
                 .backgroundColor(Colors.Transparent)
                 .noBorder()

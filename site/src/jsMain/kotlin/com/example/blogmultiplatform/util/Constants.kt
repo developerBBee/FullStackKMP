@@ -8,6 +8,7 @@ object Constants {
     const val POST_PER_PAGE = 8
 
     const val QUERY_PARAM = "query"
+    const val POST_ID_PARAM = "postId"
 }
 
 object Res {
@@ -42,4 +43,5 @@ object Id {
     const val navigationText = "navigationText"
     const val editor = "editor"
     const val editorPreview = "editorPreview"
+    const val adminSearchBar = "adminSearchBar"
 }

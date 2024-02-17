@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.models.PostWithoutDetails
 import com.example.blogmultiplatform.models.Theme
+import com.example.blogmultiplatform.navigation.Screen
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.parseDateString
 import com.varabyte.kobweb.compose.css.CSSTransition
@@ -44,6 +45,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.transition
 import com.varabyte.kobweb.compose.ui.modifiers.visibility
 import com.varabyte.kobweb.compose.ui.styleModifier
 import com.varabyte.kobweb.compose.ui.toAttrs
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.layout.SimpleGrid
 import com.varabyte.kobweb.silk.components.layout.numColumns
@@ -62,6 +64,7 @@ fun PostPreview(
     onSelect: (String) -> Unit,
     deSelect: (String) -> Unit,
 ) {
+    val context = rememberPageContext()
     var checked by remember(selectable) { mutableStateOf(false) }
 
     Column(
@@ -83,6 +86,8 @@ fun PostPreview(
                     } else {
                         deSelect(post._id)
                     }
+                } else {
+                    context.router.navigateTo(Screen.AdminCreate.passPostId(id = post._id))
                 }
             }
             .transition(CSSTransition(property = TransitionProperty.All, duration = 200.ms))

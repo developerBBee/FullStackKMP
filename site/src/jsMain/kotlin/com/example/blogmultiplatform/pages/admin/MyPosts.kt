@@ -18,12 +18,15 @@ import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.Constants.POST_PER_PAGE
 import com.example.blogmultiplatform.util.Constants.QUERY_PARAM
 import com.example.blogmultiplatform.util.Constants.SIDE_PANEL_WIDTH
+import com.example.blogmultiplatform.util.Id
 import com.example.blogmultiplatform.util.deleteSelectedPosts
 import com.example.blogmultiplatform.util.fetchMyPosts
 import com.example.blogmultiplatform.util.isUserLoggedIn
 import com.example.blogmultiplatform.util.noBorder
 import com.example.blogmultiplatform.util.searchPostsByTitle
+import com.varabyte.kobweb.compose.css.CSSTransition
 import com.varabyte.kobweb.compose.css.FontWeight
+import com.varabyte.kobweb.compose.css.TransitionProperty
 import com.varabyte.kobweb.compose.css.Visibility
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
@@ -43,6 +46,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.compose.ui.modifiers.padding
+import com.varabyte.kobweb.compose.ui.modifiers.transition
 import com.varabyte.kobweb.compose.ui.modifiers.visibility
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.rememberPageContext
@@ -52,9 +56,13 @@ import com.varabyte.kobweb.silk.components.forms.SwitchSize
 import com.varabyte.kobweb.silk.components.style.breakpoint.Breakpoint
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
+import kotlinx.browser.document
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.renderComposable
+import org.w3c.dom.HTMLInputElement
 
 @Page
 @Composable
@@ -77,7 +85,7 @@ fun MyPostsScreen() {
     var selectable by remember { mutableStateOf(false) }
 
     val hasParams = remember(key1 = context.route) { context.route.params.containsKey(QUERY_PARAM) }
-    var query = remember(key1 = context.route) {
+    val query = remember(key1 = context.route) {
         runCatching {
             context.route.params.getValue(QUERY_PARAM)
         }.getOrElse {
@@ -88,6 +96,11 @@ fun MyPostsScreen() {
     LaunchedEffect(key1 = context.route) {
         postsToSkip = 0
         if (hasParams) {
+            renderComposable(rootElementId = "root") {
+                val decodeURIComponent: dynamic = js("decodeURIComponent")
+                val decoded = decodeURIComponent(query).toString()
+                (document.getElementById(Id.adminSearchBar) as HTMLInputElement).value = decoded
+            }
             searchPostsByTitle(
                 query = query,
                 skip = postsToSkip,
@@ -134,7 +147,13 @@ fun MyPostsScreen() {
                     .margin(bottom = 24.px),
                 contentAlignment = Alignment.Center
             ) {
-                SearchBar { searchText ->
+                SearchBar(
+                    modifier = Modifier
+                        .visibility(if (selectable) Visibility.Hidden else Visibility.Visible)
+                        .transition(
+                            CSSTransition(property = TransitionProperty.All, duration = 200.ms)
+                        )
+                ) { searchText ->
                     context.router.navigateTo(
                         searchText.takeIf { it.isNotEmpty() }?.let { query ->
                             Screen.AdminMyPosts.searchByTitle(query = query)
