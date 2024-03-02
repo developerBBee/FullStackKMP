@@ -142,6 +142,7 @@ fun MyPostsScreen() {
                 contentAlignment = Alignment.Center
             ) {
                 SearchBar(
+                    breakpoint = breakpoint,
                     modifier = Modifier
                         .visibility(if (selectableMode) Visibility.Hidden else Visibility.Visible)
                         .transition(
