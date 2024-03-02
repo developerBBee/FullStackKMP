@@ -95,7 +95,6 @@ import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.TextArea
 import org.jetbrains.compose.web.dom.Ul
-import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.get
 import kotlin.js.Date
 
@@ -108,6 +107,7 @@ data class CreatePageUiEvent(
     val thumbnailInputEnabled: Boolean = true,
     val content: String = "",
     val category: Category = Category.Programing,
+    val buttonText: String = "Create",
     val popular: Boolean = false,
     val main: Boolean = false,
     val sponsored: Boolean = false,
@@ -117,6 +117,8 @@ data class CreatePageUiEvent(
     val linkPopup: Boolean = false,
     val imagePopup: Boolean = false,
 )
+
+private val INIT_UI_EVENT = CreatePageUiEvent()
 
 @Page
 @Composable
@@ -134,17 +136,37 @@ fun CreateScreen() {
     val breakpoint = rememberBreakpoint()
     val isLarge: Boolean = (breakpoint > Breakpoint.MD)
 
-    var uiEvent by remember { mutableStateOf(CreatePageUiEvent()) }
+    var uiEvent by remember { mutableStateOf(INIT_UI_EVENT) }
 
     val hasPostIdParam = remember(key1 = context.route) {
         context.route.params.containsKey(POST_ID_PARAM)
     }
 
     LaunchedEffect(key1 = hasPostIdParam) {
+        if (!hasPostIdParam) {
+            uiEvent = INIT_UI_EVENT
+            return@LaunchedEffect
+        }
+
         val postId = context.route.params[POST_ID_PARAM] ?: ""
         val response = fetchSelectedPost(id = postId)
         if (response is ApiResponse.Success) {
-            println(response.data)
+            response.data.run {
+                println(this)
+                uiEvent = uiEvent.copy(
+                    id = _id,
+                    title = title,
+                    subtitle = subtitle,
+                    content = content,
+                    category = category,
+                    buttonText = "Update",
+                    thumbnail = thumbnail,
+                    thumbnailFileName = thumbnail,
+                    main = main,
+                    popular = popular,
+                    sponsored = sponsored,
+                )
+            }
         }
     }
 
@@ -300,11 +322,12 @@ fun CreateScreen() {
                     onLinkClick = { uiEvent = uiEvent.copy(linkPopup = true) },
                     onImageClick = { uiEvent = uiEvent.copy(imagePopup = true) },
                 )
-                Editor(editorVisibility = uiEvent.editorVisibility)
-                CreateButton {
-                    uiEvent = uiEvent.copy(
-                        content = (document.getElementById(Id.editor) as HTMLTextAreaElement).value
-                    )
+                Editor(
+                    text = uiEvent.content,
+                    editorVisibility = uiEvent.editorVisibility,
+                    onInput = { uiEvent = uiEvent.copy(content = it) }
+                )
+                CreateButton(text = uiEvent.buttonText) {
                     if (!uiEvent.thumbnailInputEnabled) {
                         uiEvent = uiEvent.copy(thumbnail = "")
                     }
@@ -584,9 +607,14 @@ fun EditorControlView(
 }
 
 @Composable
-fun Editor(editorVisibility: Boolean) {
+fun Editor(
+    text: String,
+    editorVisibility: Boolean,
+    onInput: (String) -> Unit,
+) {
     Box(modifier = Modifier.fillMaxWidth()) {
         TextArea(
+            value = text,
             attrs = Modifier
                 .id(Id.editor)
                 .fillMaxWidth()
@@ -610,6 +638,7 @@ fun Editor(editorVisibility: Boolean) {
                 .fontSize(16.px)
                 .toAttrs {
                     attr("placeholder", "Type here...")
+                    onInput { onInput(it.value) }
                 }
         )
         Div(
@@ -635,6 +664,7 @@ fun Editor(editorVisibility: Boolean) {
 
 @Composable
 fun CreateButton(
+    text: String,
     onClick: () -> Unit
 ) {
     Button(
@@ -651,6 +681,6 @@ fun CreateButton(
             .fontSize(16.px)
             .toAttrs()
     ) {
-        SpanText(text = "Create")
+        SpanText(text = text)
     }
 }
