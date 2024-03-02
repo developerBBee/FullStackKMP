@@ -2,6 +2,7 @@ package com.example.blogmultiplatform.navigation
 
 import com.example.blogmultiplatform.models.Constants.POST_ID_PARAM
 import com.example.blogmultiplatform.models.Constants.QUERY_PARAM
+import com.example.blogmultiplatform.models.Constants.UPDATED_PARAM
 
 
 sealed class Screen(val route: String) {
@@ -13,5 +14,11 @@ sealed class Screen(val route: String) {
     data object AdminMyPosts : Screen("/admin/myposts") {
         fun searchByTitle(query: String) = "/admin/myposts?$QUERY_PARAM=$query"
     }
-    data object AdminSuccess : Screen("/admin/success")
+    data object AdminSuccess : Screen("/admin/success") {
+        fun getRoute(updated: Boolean) = if (updated) {
+            "$route?$UPDATED_PARAM=true"
+        } else {
+            route
+        }
+    }
 }

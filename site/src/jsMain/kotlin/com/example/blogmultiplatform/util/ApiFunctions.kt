@@ -80,6 +80,18 @@ suspend fun addPost(post: Post): Boolean {
     }
 }
 
+suspend fun updatePost(post: Post): Boolean {
+    return runCatching {
+        window.api.tryPost(
+            apiPath = "updatepost",
+            body = Json.encodeToString(post).encodeToByteArray()
+        )?.decodeToString().toBoolean()
+    }.getOrElse { e ->
+        println(e.message)
+        false
+    }
+}
+
 suspend fun fetchMyPosts(
     skip: Int,
     onSuccess: (ApiListResponse.Success) -> Unit,

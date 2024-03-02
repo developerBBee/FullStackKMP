@@ -30,6 +30,7 @@ import com.example.blogmultiplatform.util.getEditor
 import com.example.blogmultiplatform.util.getSelectedText
 import com.example.blogmultiplatform.util.isUserLoggedIn
 import com.example.blogmultiplatform.util.noBorder
+import com.example.blogmultiplatform.util.updatePost
 import com.varabyte.kobweb.browser.file.loadDataUrlFromDisk
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.FontWeight
@@ -338,23 +339,27 @@ fun CreateScreen() {
                         uiEvent.content.isNotEmpty()
                     ) {
                         scope.launch {
-                            val result = addPost(
-                                Post(
-                                    author = localStorage.get("username").toString(),
-                                    title = uiEvent.title,
-                                    subtitle = uiEvent.subtitle,
-                                    date = Date.now().toLong(),
-                                    thumbnail = uiEvent.thumbnail,
-                                    content = uiEvent.content,
-                                    category = uiEvent.category,
-                                    popular = uiEvent.popular,
-                                    main = uiEvent.main,
-                                    sponsored = uiEvent.sponsored,
-                                )
-                            )
-                            if (result) {
-                                context.router.navigateTo(Screen.AdminSuccess.route)
-                            }
+                            Post(
+                                _id = uiEvent.id,
+                                author = localStorage.get("username").toString(),
+                                title = uiEvent.title,
+                                subtitle = uiEvent.subtitle,
+                                date = Date.now().toLong(),
+                                thumbnail = uiEvent.thumbnail,
+                                content = uiEvent.content,
+                                category = uiEvent.category,
+                                popular = uiEvent.popular,
+                                main = uiEvent.main,
+                                sponsored = uiEvent.sponsored,
+                            ).let {
+                                hasPostIdParam to if (hasPostIdParam) {
+                                    updatePost(it)
+                                } else {
+                                    addPost(it)
+                                }
+                            }.also { (updated, result) -> if (result) {
+                                context.router.navigateTo(Screen.AdminSuccess.getRoute(updated))
+                            } }
                         }
                     } else {
                         uiEvent = uiEvent.copy(

@@ -31,6 +31,18 @@ suspend fun addPost(context: ApiContext) {
     }
 }
 
+@Api(routeOverride = "updatepost")
+suspend fun updatePost(context: ApiContext) {
+    context.runCatching {
+        req.getBody<Post>()
+            ?.let { data.getValue<MongoDB>().updatePost(it) }
+            .also { res.setBody(it ?: false) }
+    }.onFailure { e ->
+        context.logger.info("addPost API EXCEPTION: $e")
+        context.res.setBody(e.message)
+    }
+}
+
 @Api(routeOverride = "readmyposts")
 suspend fun readMyPosts(context: ApiContext) {
     context.runCatching {
