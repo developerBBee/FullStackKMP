@@ -1,6 +1,7 @@
 package com.example.blogmultiplatform.pages.admin
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -9,7 +10,9 @@ import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.components.AdminPageLayout
 import com.example.blogmultiplatform.components.LinkPopup
 import com.example.blogmultiplatform.components.MessagePopup
+import com.example.blogmultiplatform.models.ApiResponse
 import com.example.blogmultiplatform.models.Category
+import com.example.blogmultiplatform.models.Constants.POST_ID_PARAM
 import com.example.blogmultiplatform.models.ControlStyle
 import com.example.blogmultiplatform.models.EditorControl
 import com.example.blogmultiplatform.models.Post
@@ -22,6 +25,7 @@ import com.example.blogmultiplatform.util.Id
 import com.example.blogmultiplatform.util.addPost
 import com.example.blogmultiplatform.util.applyControlStyle
 import com.example.blogmultiplatform.util.applyStyle
+import com.example.blogmultiplatform.util.fetchSelectedPost
 import com.example.blogmultiplatform.util.getEditor
 import com.example.blogmultiplatform.util.getSelectedText
 import com.example.blogmultiplatform.util.isUserLoggedIn
@@ -131,6 +135,18 @@ fun CreateScreen() {
     val isLarge: Boolean = (breakpoint > Breakpoint.MD)
 
     var uiEvent by remember { mutableStateOf(CreatePageUiEvent()) }
+
+    val hasPostIdParam = remember(key1 = context.route) {
+        context.route.params.containsKey(POST_ID_PARAM)
+    }
+
+    LaunchedEffect(key1 = hasPostIdParam) {
+        val postId = context.route.params[POST_ID_PARAM] ?: ""
+        val response = fetchSelectedPost(id = postId)
+        if (response is ApiResponse.Success) {
+            println(response.data)
+        }
+    }
 
     AdminPageLayout {
         Box(

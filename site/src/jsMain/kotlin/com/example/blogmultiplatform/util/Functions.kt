@@ -9,11 +9,7 @@ import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.components.LoadingIndicator
 import com.example.blogmultiplatform.models.ControlStyle
 import com.example.blogmultiplatform.models.EditorControl
-import com.example.blogmultiplatform.models.Post
-import com.example.blogmultiplatform.models.RandomJoke
 import com.example.blogmultiplatform.navigation.Screen
-import com.varabyte.kobweb.browser.api
-import com.varabyte.kobweb.browser.http.http
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.border
@@ -23,9 +19,6 @@ import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.animation.Keyframes
 import kotlinx.browser.document
 import kotlinx.browser.localStorage
-import kotlinx.browser.window
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.deg
 import org.jetbrains.compose.web.css.px
@@ -68,27 +61,6 @@ fun logout() {
     localStorage["username"] = ""
 }
 
-suspend fun getJoke(): RandomJoke = runCatching {
-    window.http.get(KeyFile.HUMOR_API_URL).decodeToString()
-        .let { result ->
-            localStorage["date"] = Date.now().toString()
-            localStorage["joke"] = result
-            Json.decodeFromString<RandomJoke>(result)
-        }
-}.getOrElse { e ->
-    println("getJoke() error ${e.message}")
-    getLocalJoke()
-}
-
-fun getLocalJoke(): RandomJoke = runCatching {
-    requireNotNull(
-        localStorage["joke"]?.let { Json.decodeFromString<RandomJoke>(it) }
-    )
-}.getOrElse { e ->
-    println("getLocalJoke() error ${e.message}")
-    RandomJoke(id = -1, joke = "Unexpected Error.")
-}
-
 fun Modifier.noBorder(): Modifier = this
     .border(
         width = 0.px,
@@ -100,18 +72,6 @@ fun Modifier.noBorder(): Modifier = this
         style = LineStyle.None,
         color = Colors.Transparent
 )
-
-suspend fun addPost(post: Post): Boolean {
-    return runCatching {
-        window.api.tryPost(
-            apiPath = "addpost",
-            body = Json.encodeToString(post).encodeToByteArray()
-        )?.decodeToString().toBoolean()
-    }.getOrElse { e ->
-        println(e.message)
-        false
-    }
-}
 
 fun getEditor() = document.getElementById(Id.editor) as HTMLTextAreaElement
 

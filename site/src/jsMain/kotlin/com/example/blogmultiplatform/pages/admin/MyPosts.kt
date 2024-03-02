@@ -11,12 +11,12 @@ import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.components.AdminPageLayout
 import com.example.blogmultiplatform.components.Posts
 import com.example.blogmultiplatform.components.SearchBar
+import com.example.blogmultiplatform.models.Constants.POSTS_PER_PAGE
+import com.example.blogmultiplatform.models.Constants.QUERY_PARAM
 import com.example.blogmultiplatform.models.PostWithoutDetails
 import com.example.blogmultiplatform.models.Theme
 import com.example.blogmultiplatform.navigation.Screen
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
-import com.example.blogmultiplatform.util.Constants.POST_PER_PAGE
-import com.example.blogmultiplatform.util.Constants.QUERY_PARAM
 import com.example.blogmultiplatform.util.Constants.SIDE_PANEL_WIDTH
 import com.example.blogmultiplatform.util.Id
 import com.example.blogmultiplatform.util.deleteSelectedPosts
@@ -82,16 +82,10 @@ fun MyPostsScreen() {
     val selectedPosts = remember { mutableStateListOf<String>() }
     var postsToSkip by remember { mutableStateOf(0) }
     var showMoreVisibility by remember { mutableStateOf(false) }
-    var selectable by remember { mutableStateOf(false) }
+    var selectableMode by remember { mutableStateOf(false) }
 
     val hasParams = remember(key1 = context.route) { context.route.params.containsKey(QUERY_PARAM) }
-    val query = remember(key1 = context.route) {
-        runCatching {
-            context.route.params.getValue(QUERY_PARAM)
-        }.getOrElse {
-            ""
-        }
-    }
+    val query = remember(key1 = context.route) { context.route.params[QUERY_PARAM] ?: "" }
 
     LaunchedEffect(key1 = context.route) {
         postsToSkip = 0
@@ -108,8 +102,8 @@ fun MyPostsScreen() {
                     apiListResponse.data.also { data ->
                         myPosts.clear()
                         myPosts.addAll(data)
-                        postsToSkip += POST_PER_PAGE
-                        showMoreVisibility = data.size >= POST_PER_PAGE
+                        postsToSkip += POSTS_PER_PAGE
+                        showMoreVisibility = data.size >= POSTS_PER_PAGE
                     }
                 },
                 onError = { throwable -> println(throwable.message) }
@@ -121,8 +115,8 @@ fun MyPostsScreen() {
                     apiListResponse.data.also { data ->
                         myPosts.clear()
                         myPosts.addAll(data)
-                        postsToSkip += POST_PER_PAGE
-                        showMoreVisibility = data.size >= POST_PER_PAGE
+                        postsToSkip += POSTS_PER_PAGE
+                        showMoreVisibility = data.size >= POSTS_PER_PAGE
                     }
                 },
                 onError = { throwable -> println(throwable.message) }
@@ -149,7 +143,7 @@ fun MyPostsScreen() {
             ) {
                 SearchBar(
                     modifier = Modifier
-                        .visibility(if (selectable) Visibility.Hidden else Visibility.Visible)
+                        .visibility(if (selectableMode) Visibility.Hidden else Visibility.Visible)
                         .transition(
                             CSSTransition(property = TransitionProperty.All, duration = 200.ms)
                         )
@@ -174,18 +168,18 @@ fun MyPostsScreen() {
                     Switch(
                         modifier = Modifier.margin(right = 8.px),
                         size = SwitchSize.LG,
-                        checked = selectable,
+                        checked = selectableMode,
                         onCheckedChange = {
-                            selectable = it
-                            if (!selectable) {
+                            selectableMode = it
+                            if (!selectableMode) {
                                 selectedPosts.clear()
                             }
                         }
                     )
                     SpanText(
                         modifier = Modifier
-                            .color(if (selectable) Colors.Black else Theme.HalfBlack.rgb),
-                        text = if (selectable) "${selectedPosts.size} Posts selected" else "Select"
+                            .color(if (selectableMode) Colors.Black else Theme.HalfBlack.rgb),
+                        text = if (selectableMode) "${selectedPosts.size} Posts selected" else "Select"
                     )
                 }
                 Button(
@@ -207,7 +201,7 @@ fun MyPostsScreen() {
                         scope.launch {
                             val result = deleteSelectedPosts(ids = selectedPosts)
                             if (result) {
-                                selectable = false
+                                selectableMode = false
                                 postsToSkip -= selectedPosts.size
                                 selectedPosts.forEach { deletedPostId ->
                                     myPosts.removeAll { it._id == deletedPostId }
@@ -223,7 +217,7 @@ fun MyPostsScreen() {
             Posts(
                 breakpoint = breakpoint,
                 posts = myPosts,
-                selectable = selectable,
+                selectableMode = selectableMode,
                 onSelect = { selectedPosts.add(it) },
                 deSelect = { selectedPosts.remove(it) },
                 showMoreVisibility = showMoreVisibility,
@@ -237,8 +231,8 @@ fun MyPostsScreen() {
                                 apiListResponse.data.also { data ->
                                     if (data.isNotEmpty()) {
                                         myPosts.addAll(data)
-                                        postsToSkip += POST_PER_PAGE
-                                        showMoreVisibility = data.size >= POST_PER_PAGE
+                                        postsToSkip += POSTS_PER_PAGE
+                                        showMoreVisibility = data.size >= POSTS_PER_PAGE
                                     } else {
                                         showMoreVisibility = false
                                     }
@@ -253,8 +247,8 @@ fun MyPostsScreen() {
                                 apiListResponse.data.also { data ->
                                     if (data.isNotEmpty()) {
                                         myPosts.addAll(data)
-                                        postsToSkip += POST_PER_PAGE
-                                        showMoreVisibility = data.size >= POST_PER_PAGE
+                                        postsToSkip += POSTS_PER_PAGE
+                                        showMoreVisibility = data.size >= POSTS_PER_PAGE
                                     } else {
                                         showMoreVisibility = false
                                     }

@@ -5,10 +5,6 @@ object Constants {
     const val SIDE_PANEL_WIDTH = 250
     const val PAGE_WIDTH = 1920
     const val COLLAPSED_PANEL_HEIGHT = 100
-    const val POST_PER_PAGE = 8
-
-    const val QUERY_PARAM = "query"
-    const val POST_ID_PARAM = "postId"
 }
 
 object Res {

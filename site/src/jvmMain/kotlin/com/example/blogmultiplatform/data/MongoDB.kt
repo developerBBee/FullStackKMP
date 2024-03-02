@@ -1,16 +1,17 @@
 package com.example.blogmultiplatform.data
 
+import com.example.blogmultiplatform.models.Constants.POSTS_PER_PAGE
 import com.example.blogmultiplatform.models.Post
 import com.example.blogmultiplatform.models.PostWithoutDetails
 import com.example.blogmultiplatform.models.User
 import com.example.blogmultiplatform.util.Constants.DATABASE_NAME
-import com.example.blogmultiplatform.util.Constants.POSTS_PER_PAGE
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts.descending
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.varabyte.kobweb.api.data.add
 import com.varabyte.kobweb.api.init.InitApi
 import com.varabyte.kobweb.api.init.InitApiContext
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 
@@ -59,6 +60,12 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
             .skip(skip)
             .limit(POSTS_PER_PAGE)
             .toList()
+    }
+
+    override suspend fun readSelectedPost(id: String): Post {
+        return postCollection
+            .find(Filters.eq(Post::_id.name, id))
+            .first()
     }
 
     override suspend fun checkUserExistence(user: User): User? {

@@ -60,26 +60,26 @@ import org.jetbrains.compose.web.dom.CheckboxInput
 @Composable
 fun PostPreview(
     post: PostWithoutDetails,
-    selectable: Boolean,
+    selectableMode: Boolean,
     onSelect: (String) -> Unit,
     deSelect: (String) -> Unit,
 ) {
     val context = rememberPageContext()
-    var checked by remember(selectable) { mutableStateOf(false) }
+    var checked by remember(selectableMode) { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxWidth(95.percent)
             .margin(bottom = 24.px)
-            .padding(all = if (selectable) 10.px else 0.px)
+            .padding(all = if (selectableMode) 10.px else 0.px)
             .borderRadius(r = 4.px)
             .border(
-                width = if (selectable) 4.px else 0.px,
-                style = if (selectable) LineStyle.Solid else LineStyle.None,
+                width = if (selectableMode) 4.px else 0.px,
+                style = if (selectableMode) LineStyle.Solid else LineStyle.None,
                 color = if (checked) Theme.Primary.rgb else Theme.Gray.rgb
             )
             .onClick {
-                if (selectable) {
+                if (selectableMode) {
                     checked = !checked
                     if (checked) {
                         onSelect(post._id)
@@ -147,7 +147,7 @@ fun PostPreview(
             verticalAlignment = Alignment.CenterVertically
         ) {
             CategoryChip(category = post.category)
-            if (selectable) {
+            if (selectableMode) {
                 CheckboxInput(
                     checked = checked,
                     attrs = Modifier
@@ -163,7 +163,7 @@ fun PostPreview(
 fun Posts(
     breakpoint: Breakpoint,
     posts: List<PostWithoutDetails>,
-    selectable: Boolean = false,
+    selectableMode: Boolean = false,
     onSelect: (String) -> Unit,
     deSelect: (String) -> Unit,
     showMoreVisibility: Boolean,
@@ -183,7 +183,7 @@ fun Posts(
             posts.forEach { post ->
                 PostPreview(
                     post = post,
-                    selectable = selectable,
+                    selectableMode = selectableMode,
                     onSelect = onSelect,
                     deSelect = deSelect,
                 )
