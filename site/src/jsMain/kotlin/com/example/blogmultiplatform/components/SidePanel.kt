@@ -96,7 +96,7 @@ private fun SidePanelInternal() {
 }
 
 @Composable
-private fun NavigationItems() {
+fun NavigationItems() {
     val context = rememberPageContext()
     SpanText(
         modifier = Modifier
@@ -230,7 +230,10 @@ private fun CollapsedSidePanel(onMenuClick: () -> Unit) {
 }
 
 @Composable
-fun OverflowSidePanel(onMenuCloseArg: () -> Unit) {
+fun OverflowSidePanel(
+    onMenuCloseArg: () -> Unit,
+    content: @Composable () -> Unit
+) {
     val breakpoint = rememberBreakpoint()
 
     var translateX by remember { mutableStateOf((-100).percent) }
@@ -287,7 +290,7 @@ fun OverflowSidePanel(onMenuCloseArg: () -> Unit) {
                     description = "Logo Image"
                 )
             }
-            NavigationItems()
+            content()
         }
         Box(modifier = Modifier.fillMaxHeight().weight(1).onClick { onMenuClose() })
     }

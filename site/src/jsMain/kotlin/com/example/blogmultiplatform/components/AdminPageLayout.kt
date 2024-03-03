@@ -19,21 +19,25 @@ import org.jetbrains.compose.web.css.px
 
 @Composable
 fun AdminPageLayout(content: @Composable () -> Unit) {
-    var overflowMenuOpened by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    var overflowMenuOpened by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.fillMaxSize()
                 .maxWidth(Constants.PAGE_WIDTH.px),
         ) {
-            SidePanel { overflowMenuOpened = true }
+            SidePanel(onMenuClick = { overflowMenuOpened = true })
             if (overflowMenuOpened) {
-                OverflowSidePanel {
-                    scope.launch {
-                        delay(300)
-                        overflowMenuOpened = false
+                OverflowSidePanel(
+                    onMenuCloseArg = {
+                        scope.launch {
+                            delay(300)
+                            overflowMenuOpened = false
+                        }
                     }
+                ) {
+                    NavigationItems()
                 }
             }
             content()
