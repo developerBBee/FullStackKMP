@@ -1,9 +1,18 @@
 package com.example.blogmultiplatform.pages
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import com.example.blogmultiplatform.components.CategoryNavigationItems
 import com.example.blogmultiplatform.components.OverflowSidePanel
+import com.example.blogmultiplatform.models.ApiListResponse
 import com.example.blogmultiplatform.sections.HeaderSection
+import com.example.blogmultiplatform.sections.MainSection
+import com.example.blogmultiplatform.util.fetchMainPosts
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
@@ -20,6 +29,15 @@ fun HomePage() {
     val scope = rememberCoroutineScope()
     val breakpoint = rememberBreakpoint()
     var overflowMenuOpened by remember { mutableStateOf(false) }
+
+    var mainPosts by remember { mutableStateOf<ApiListResponse>(ApiListResponse.Idle) }
+
+    LaunchedEffect(Unit) {
+        fetchMainPosts(
+            onSuccess = { mainPosts = it },
+            onError = { println(it.message) }
+        )
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -42,5 +60,6 @@ fun HomePage() {
             breakpoint = breakpoint,
             onMenuClick = { overflowMenuOpened = true }
         )
+        MainSection(breakpoint = breakpoint, posts = mainPosts)
     }
 }

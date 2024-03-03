@@ -5,6 +5,7 @@ import com.example.blogmultiplatform.models.Post
 import com.example.blogmultiplatform.models.PostWithoutDetails
 import com.example.blogmultiplatform.models.User
 import com.example.blogmultiplatform.util.Constants.DATABASE_NAME
+import com.example.blogmultiplatform.util.Constants.MAIN_POSTS_LIMIT
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts.descending
 import com.mongodb.client.model.Updates
@@ -62,6 +63,14 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
             .toList()
     }
 
+    override suspend fun readMainPosts(): List<PostWithoutDetails> {
+        return postCollection
+            .withDocumentClass(PostWithoutDetails::class.java)
+            .find(Filters.eq(PostWithoutDetails::main.name, true))
+            .sort(descending(PostWithoutDetails::date.name))
+            .limit(MAIN_POSTS_LIMIT)
+            .toList()
+    }
     override suspend fun deleteSelectedPosts(posts: List<String>): Boolean {
         return postCollection
             .deleteMany(Filters.`in`(Post::_id.name, posts))

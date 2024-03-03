@@ -56,6 +56,17 @@ suspend fun readMyPosts(context: ApiContext) {
     }
 }
 
+@Api(routeOverride = "readmainposts")
+suspend fun readMainPosts(context: ApiContext) {
+    context.runCatching {
+        val mainPosts = data.getValue<MongoDB>().readMainPosts()
+        res.setBody(ApiListResponse.Success(data = mainPosts))
+    }.onFailure { e ->
+        context.logger.info("readMainPosts API EXCEPTION: $e")
+        context.res.setBody(ApiListResponse.Error(message = e.message.toString()))
+    }
+}
+
 @Api(routeOverride = "deleteselectedposts")
 suspend fun deleteSelectedPosts(context: ApiContext) {
     context.runCatching {

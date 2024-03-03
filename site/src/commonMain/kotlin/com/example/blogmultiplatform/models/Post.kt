@@ -25,6 +25,8 @@ data class PostWithoutDetails(
     val title: String,
     val subtitle: String,
     val thumbnail: String,
-    val content: String,
     val category: Category,
+    val popular: Boolean = false,
+    val main: Boolean = false,
+    val sponsored: Boolean = false,
 )
