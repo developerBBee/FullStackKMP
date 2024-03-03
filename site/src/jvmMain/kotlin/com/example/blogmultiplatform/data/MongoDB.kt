@@ -71,6 +71,23 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
             .limit(MAIN_POSTS_LIMIT)
             .toList()
     }
+
+    override suspend fun readLatestPosts(skip: Int): List<PostWithoutDetails> {
+        return postCollection
+            .withDocumentClass(PostWithoutDetails::class.java)
+            .find(
+                Filters.and(
+                    Filters.eq(PostWithoutDetails::popular.name, false),
+                    Filters.eq(PostWithoutDetails::main.name, false),
+                    Filters.eq(PostWithoutDetails::sponsored.name, false)
+                )
+            )
+            .sort(descending(PostWithoutDetails::date.name))
+            .skip(skip)
+            .limit(POSTS_PER_PAGE)
+            .toList()
+    }
+
     override suspend fun deleteSelectedPosts(posts: List<String>): Boolean {
         return postCollection
             .deleteMany(Filters.`in`(Post::_id.name, posts))

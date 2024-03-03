@@ -125,7 +125,29 @@ suspend fun fetchMainPosts(
             }.onFailure {
                 throw Exception(result.parseData<ApiListResponse.Error>().message)
             }
-        }
+        } ?: throw Exception(message = "null result")
+    }.getOrElse { e ->
+        onError(e)
+    }
+}
+
+suspend fun fetchLatestPosts(
+    skip: Int,
+    onSuccess: (ApiListResponse.Success) -> Unit,
+    onError: (Throwable) -> Unit,
+) {
+    runCatching {
+        window.api.tryGet(
+            apiPath = "readlatestposts?$SKIP_PARAM=$skip"
+        )?.decodeToString()?.let { result ->
+            runCatching {
+                onSuccess(result.parseData<ApiListResponse.Success>())
+            }.onFailure {
+                throw Exception(result.parseData<ApiListResponse.Error>().message)
+            }
+        } ?: throw Exception(message = "null result")
+    }.getOrElse { e ->
+        onError(e)
     }
 }
 

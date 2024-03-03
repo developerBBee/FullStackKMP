@@ -67,6 +67,18 @@ suspend fun readMainPosts(context: ApiContext) {
     }
 }
 
+@Api(routeOverride = "readlatestposts")
+suspend fun readLatestPosts(context: ApiContext) {
+    context.runCatching {
+        val skip = req.params[SKIP_PARAM]?.toInt() ?: 0
+        val latestPosts = data.getValue<MongoDB>().readLatestPosts(skip = skip)
+        res.setBody(ApiListResponse.Success(data = latestPosts))
+    }.onFailure { e ->
+        context.logger.info("readLatestPosts API EXCEPTION: $e")
+        context.res.setBody(ApiListResponse.Error(message = e.message.toString()))
+    }
+}
+
 @Api(routeOverride = "deleteselectedposts")
 suspend fun deleteSelectedPosts(context: ApiContext) {
     context.runCatching {

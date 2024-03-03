@@ -61,7 +61,7 @@ fun MainPosts(
             .margin(topBottom = 50.px)
     ) {
         if (breakpoint == Breakpoint.XL) {
-            PostPreview(post = posts.first(), darkTheme = true, thumbnailHeight = 640.px)
+            PostPreview(post = posts.first(), darkTheme = true, thumbnailHeight = 640.px) {}
             Column(
                 modifier = Modifier
                     .fillMaxWidth(80.percent)
@@ -73,7 +73,10 @@ fun MainPosts(
                         darkTheme = true,
                         vertical = false,
                         thumbnailHeight = 200.px,
-                        titleMaxLines = 1
+                        titleMaxLines = 1,
+                        onClick = {
+
+                        }
                     )
                 }
             }
@@ -82,17 +85,20 @@ fun MainPosts(
                 modifier = Modifier.margin(right = 10.px),
                 post = posts.first(),
                 darkTheme = true,
+                onClick = {}
             )
             PostPreview(
                 modifier = Modifier.margin(left = 10.px),
                 post = posts[1],
                 darkTheme = true,
+                onClick = {}
             )
         } else {
             PostPreview(
                 post = posts.first(),
                 darkTheme = true,
-                thumbnailHeight = 640.px
+                thumbnailHeight = 640.px,
+                onClick = {}
             )
         }
     }
