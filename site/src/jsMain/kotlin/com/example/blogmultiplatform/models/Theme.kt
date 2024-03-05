@@ -59,5 +59,9 @@ enum class Theme(
     Purple(
         hex = "#8B6DFF",
         rgb = rgb(139, 109, 255)
+    ),
+    Sponsored(
+        hex = "#3300FF",
+        rgb = rgb(51, 1, 255)
     )
 }

@@ -16,8 +16,10 @@ import com.example.blogmultiplatform.models.PostWithoutDetails
 import com.example.blogmultiplatform.sections.HeaderSection
 import com.example.blogmultiplatform.sections.MainSection
 import com.example.blogmultiplatform.sections.PostsSection
+import com.example.blogmultiplatform.sections.SponsoredPostsSection
 import com.example.blogmultiplatform.util.fetchLatestPosts
 import com.example.blogmultiplatform.util.fetchMainPosts
+import com.example.blogmultiplatform.util.fetchSponsoredPosts
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
@@ -37,13 +39,19 @@ fun HomePage() {
 
     var mainPosts by remember { mutableStateOf<ApiListResponse>(ApiListResponse.Idle) }
     val latestPosts = remember { mutableStateListOf<PostWithoutDetails>() }
+    val sponsoredPosts = remember { mutableStateListOf<PostWithoutDetails>() }
+
     var latestPostsToSkip by remember { mutableStateOf(0) }
     var showMoreLatest by remember { mutableStateOf(false) }
 
-    val onSuccess: (ApiListResponse.Success) -> Unit = {
+    val onSuccessLatest: (ApiListResponse.Success) -> Unit = {
         latestPosts.addAll(it.data)
         latestPostsToSkip += POSTS_PER_PAGE
         showMoreLatest = (it.data.size == POSTS_PER_PAGE)
+    }
+
+    val onSuccessSponsored: (ApiListResponse.Success) -> Unit = { response ->
+        sponsoredPosts.addAll(response.data)
     }
 
     LaunchedEffect(Unit) {
@@ -53,7 +61,11 @@ fun HomePage() {
         )
         fetchLatestPosts(
             skip = latestPostsToSkip,
-            onSuccess = { onSuccess(it) },
+            onSuccess = { onSuccessLatest(it) },
+            onError = { println(it.message) },
+        )
+        fetchSponsoredPosts(
+            onSuccess = { onSuccessSponsored(it) },
             onError = { println(it.message) },
         )
     }
@@ -89,11 +101,16 @@ fun HomePage() {
                 scope.launch {
                     fetchLatestPosts(
                         skip = latestPostsToSkip,
-                        onSuccess = { onSuccess(it) },
+                        onSuccess = { onSuccessLatest(it) },
                         onError = { println(it.message) },
                     )
                 }
             },
+            onClick = {}
+        )
+        SponsoredPostsSection(
+            breakpoint = breakpoint,
+            posts = sponsoredPosts,
             onClick = {}
         )
     }
