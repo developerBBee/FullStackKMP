@@ -6,6 +6,7 @@ import com.example.blogmultiplatform.models.Constants.AUTHOR_PARAM
 import com.example.blogmultiplatform.models.Constants.POST_ID_PARAM
 import com.example.blogmultiplatform.models.Constants.QUERY_PARAM
 import com.example.blogmultiplatform.models.Constants.SKIP_PARAM
+import com.example.blogmultiplatform.models.Newsletter
 import com.example.blogmultiplatform.models.Post
 import com.example.blogmultiplatform.models.RandomJoke
 import com.example.blogmultiplatform.models.User
@@ -235,6 +236,19 @@ suspend fun fetchSelectedPost(id: String): ApiResponse =
     }.getOrElse { e ->
         println(e.stackTraceToString())
         ApiResponse.Error(message = e.message.toString())
+    }
+
+suspend fun subscribeToNewsletter(newsletter: Newsletter): String =
+    runCatching {
+        window.api.tryPost(
+            apiPath = "subscribe",
+            body = Json.encodeToString(newsletter).encodeToByteArray()
+        )?.decodeToString()?.let { result ->
+            result.parseData<String>()
+        } ?: throw IllegalStateException("result is null.")
+    }.getOrElse { e ->
+        println(e.stackTraceToString())
+        e.message ?: "Error on subscribeNewsletter"
     }
 
 inline fun <reified T> String?.parseData(): T {
