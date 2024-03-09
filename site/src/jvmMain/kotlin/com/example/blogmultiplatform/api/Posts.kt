@@ -85,7 +85,19 @@ suspend fun readSponsoredPosts(context: ApiContext) {
         val sponsoredPosts = data.getValue<MongoDB>().readSponsoredPosts()
         res.setBody(ApiListResponse.Success(data = sponsoredPosts))
     }.onFailure { e ->
-        context.logger.info("readMainPosts API EXCEPTION: $e")
+        context.logger.info("readSponsoredPosts API EXCEPTION: $e")
+        context.res.setBody(ApiListResponse.Error(message = e.message.toString()))
+    }
+}
+
+@Api(routeOverride = "readpopularposts")
+suspend fun readPopularPosts(context: ApiContext) {
+    context.runCatching {
+        val skip = req.params[SKIP_PARAM]?.toInt() ?: 0
+        val popularPosts = data.getValue<MongoDB>().readPopularPosts(skip = skip)
+        res.setBody(ApiListResponse.Success(data = popularPosts))
+    }.onFailure { e ->
+        context.logger.info("readPopularPosts API EXCEPTION: $e")
         context.res.setBody(ApiListResponse.Error(message = e.message.toString()))
     }
 }

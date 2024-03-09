@@ -19,6 +19,7 @@ import com.example.blogmultiplatform.sections.PostsSection
 import com.example.blogmultiplatform.sections.SponsoredPostsSection
 import com.example.blogmultiplatform.util.fetchLatestPosts
 import com.example.blogmultiplatform.util.fetchMainPosts
+import com.example.blogmultiplatform.util.fetchPopularPosts
 import com.example.blogmultiplatform.util.fetchSponsoredPosts
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column
@@ -40,18 +41,27 @@ fun HomePage() {
     var mainPosts by remember { mutableStateOf<ApiListResponse>(ApiListResponse.Idle) }
     val latestPosts = remember { mutableStateListOf<PostWithoutDetails>() }
     val sponsoredPosts = remember { mutableStateListOf<PostWithoutDetails>() }
+    val popularPosts = remember { mutableStateListOf<PostWithoutDetails>() }
 
     var latestPostsToSkip by remember { mutableStateOf(0) }
+    var popularPostsToSkip by remember { mutableStateOf(0) }
     var showMoreLatest by remember { mutableStateOf(false) }
+    var showMorePopular by remember { mutableStateOf(false) }
 
-    val onSuccessLatest: (ApiListResponse.Success) -> Unit = {
-        latestPosts.addAll(it.data)
+    val onSuccessLatest: (ApiListResponse.Success) -> Unit = { response ->
+        latestPosts.addAll(response.data)
         latestPostsToSkip += POSTS_PER_PAGE
-        showMoreLatest = (it.data.size == POSTS_PER_PAGE)
+        showMoreLatest = (response.data.size == POSTS_PER_PAGE)
     }
 
     val onSuccessSponsored: (ApiListResponse.Success) -> Unit = { response ->
         sponsoredPosts.addAll(response.data)
+    }
+
+    val onSuccessPopular: (ApiListResponse.Success) -> Unit = { response ->
+        popularPosts.addAll(response.data)
+        popularPostsToSkip += POSTS_PER_PAGE
+        showMorePopular = (response.data.size == POSTS_PER_PAGE)
     }
 
     LaunchedEffect(Unit) {
@@ -66,6 +76,11 @@ fun HomePage() {
         )
         fetchSponsoredPosts(
             onSuccess = { onSuccessSponsored(it) },
+            onError = { println(it.message) },
+        )
+        fetchPopularPosts(
+            skip = popularPostsToSkip,
+            onSuccess = { onSuccessPopular(it) },
             onError = { println(it.message) },
         )
     }
@@ -111,6 +126,22 @@ fun HomePage() {
         SponsoredPostsSection(
             breakpoint = breakpoint,
             posts = sponsoredPosts,
+            onClick = {}
+        )
+        PostsSection(
+            breakpoint = breakpoint,
+            posts = popularPosts,
+            title = "Popular Posts",
+            showMoreVisibility = showMorePopular,
+            onShowMore = {
+                scope.launch {
+                    fetchPopularPosts(
+                        skip = popularPostsToSkip,
+                        onSuccess = { onSuccessPopular(it) },
+                        onError = { println(it.message) },
+                    )
+                }
+            },
             onClick = {}
         )
     }

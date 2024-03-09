@@ -170,6 +170,26 @@ suspend fun fetchSponsoredPosts(
     }
 }
 
+suspend fun fetchPopularPosts(
+    skip: Int,
+    onSuccess: (ApiListResponse.Success) -> Unit,
+    onError: (Throwable) -> Unit,
+) {
+    runCatching {
+        window.api.tryGet(
+            apiPath = "readpopularposts?$SKIP_PARAM=$skip"
+        )?.decodeToString()?.let { result ->
+            runCatching {
+                onSuccess(result.parseData<ApiListResponse.Success>())
+            }.onFailure {
+                throw Exception(result.parseData<ApiListResponse.Error>().message)
+            }
+        } ?: throw Exception(message = "null result")
+    }.getOrElse { e ->
+        onError(e)
+    }
+}
+
 suspend fun deleteSelectedPosts(ids: List<String>): Boolean {
     return runCatching {
         window.api.tryPost(
