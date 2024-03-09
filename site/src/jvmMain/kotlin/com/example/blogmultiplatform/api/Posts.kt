@@ -3,7 +3,9 @@ package com.example.blogmultiplatform.api
 import com.example.blogmultiplatform.data.MongoDB
 import com.example.blogmultiplatform.models.ApiListResponse
 import com.example.blogmultiplatform.models.ApiResponse
+import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.Constants.AUTHOR_PARAM
+import com.example.blogmultiplatform.models.Constants.CATEGORY_PARAM
 import com.example.blogmultiplatform.models.Constants.POST_ID_PARAM
 import com.example.blogmultiplatform.models.Constants.QUERY_PARAM
 import com.example.blogmultiplatform.models.Constants.SKIP_PARAM
@@ -129,8 +131,27 @@ suspend fun searchPostsByTitle(context: ApiContext) {
                 res.setBody(ApiListResponse.Success(data = result))
             }
     }.onFailure { e ->
-        context.logger.info("readMyPosts API EXCEPTION: $e")
+        context.logger.info("searchPostsByTitle API EXCEPTION: $e")
         context.res.setBody(ApiListResponse.Error(message = e.message.toString()))
+    }
+}
+
+@Api(routeOverride = "searchpostsbycategory")
+suspend fun searchPostsByCategory(context: ApiContext) {
+    context.runCatching {
+        (Category.valueOf(req.params[CATEGORY_PARAM] ?: Category.Programing.name)
+                to (req.params[SKIP_PARAM]?.toInt() ?: 0))
+            .let { (category, skip) ->
+                data.getValue<MongoDB>().searchPostsByCategory(category = category, skip = skip)
+            }
+            .let { result ->
+                res.setBody(ApiListResponse.Success(data = result))
+            }
+    }.onFailure { e->
+        "searchPostsByCategory API EXCEPTION : ${e.javaClass.name}".also {
+            context.logger.info("$it\n${e.stackTraceToString()}")
+            context.res.setBody(ApiListResponse.Error(message = e.message ?: it))
+        }
     }
 }
 

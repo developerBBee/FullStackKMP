@@ -28,6 +28,7 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxSize
 import com.varabyte.kobweb.core.Page
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,6 +38,8 @@ import kotlinx.coroutines.launch
 fun HomePage() {
     val scope = rememberCoroutineScope()
     val breakpoint = rememberBreakpoint()
+    val context = rememberPageContext()
+
     var overflowMenuOpened by remember { mutableStateOf(false) }
 
     var mainPosts by remember { mutableStateOf<ApiListResponse>(ApiListResponse.Idle) }
@@ -100,10 +103,11 @@ fun HomePage() {
                     }
                 }
             ) {
-                CategoryNavigationItems(vertical = true)
+                CategoryNavigationItems(context = context, vertical = true)
             }
         }
         HeaderSection(
+            context = context,
             breakpoint = breakpoint,
             onMenuClick = { overflowMenuOpened = true }
         )
