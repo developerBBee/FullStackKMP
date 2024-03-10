@@ -104,6 +104,7 @@ fun applyControlStyle(
     editorControl: EditorControl,
     onLinkClick: () -> Unit,
     onImageClick: () -> Unit,
+    onApplied: () -> Unit,
 ) {
     when (editorControl) {
         EditorControl.Bold -> applyStyle(ControlStyle.Bold(getSelectedText()))
@@ -115,6 +116,7 @@ fun applyControlStyle(
         EditorControl.Code -> applyStyle(ControlStyle.Code(getSelectedText()))
         EditorControl.Image -> { onImageClick() }
     }
+    onApplied()
 }
 
 fun Long.parseDateString() = Date(this).toLocaleDateString()

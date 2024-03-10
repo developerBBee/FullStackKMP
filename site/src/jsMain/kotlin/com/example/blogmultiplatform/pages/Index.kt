@@ -13,6 +13,7 @@ import com.example.blogmultiplatform.components.OverflowSidePanel
 import com.example.blogmultiplatform.models.ApiListResponse
 import com.example.blogmultiplatform.models.Constants.POSTS_PER_PAGE
 import com.example.blogmultiplatform.models.PostWithoutDetails
+import com.example.blogmultiplatform.navigation.Screen
 import com.example.blogmultiplatform.sections.HeaderSection
 import com.example.blogmultiplatform.sections.MainSection
 import com.example.blogmultiplatform.sections.NewsletterSection
@@ -32,6 +33,7 @@ import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Page
 @Composable
@@ -98,7 +100,7 @@ fun HomePage() {
             OverflowSidePanel(
                 onMenuCloseArg = {
                     scope.launch {
-                        delay(300)
+                        delay(300.milliseconds)
                         overflowMenuOpened = false
                     }
                 },
@@ -113,9 +115,13 @@ fun HomePage() {
         HeaderSection(
             context = context,
             breakpoint = breakpoint,
-            onMenuClick = { overflowMenuOpened = true }
+            onMenuClick = { overflowMenuOpened = true },
         )
-        MainSection(breakpoint = breakpoint, posts = mainPosts)
+        MainSection(
+            breakpoint = breakpoint,
+            posts = mainPosts,
+            onClick = { context.router.navigateTo(Screen.PostPage.getPost(id = it)) },
+        )
         PostsSection(
             breakpoint = breakpoint,
             posts = latestPosts,
@@ -130,12 +136,12 @@ fun HomePage() {
                     )
                 }
             },
-            onClick = {}
+            onClick = { context.router.navigateTo(Screen.PostPage.getPost(id = it)) },
         )
         SponsoredPostsSection(
             breakpoint = breakpoint,
             posts = sponsoredPosts,
-            onClick = {}
+            onClick = { context.router.navigateTo(Screen.PostPage.getPost(id = it)) },
         )
         PostsSection(
             breakpoint = breakpoint,
@@ -151,7 +157,7 @@ fun HomePage() {
                     )
                 }
             },
-            onClick = {}
+            onClick = { context.router.navigateTo(Screen.PostPage.getPost(id = it)) },
         )
         NewsletterSection(breakpoint = breakpoint)
     }

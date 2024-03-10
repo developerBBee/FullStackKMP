@@ -22,10 +22,10 @@ sealed class ControlStyle(val style: String) {
         style = "<h3>$selectedText</h3>"
     )
     data class Quote(val selectedText: String?) : ControlStyle(
-        style = "<div style=\"background-color:#FAFAFA;padding:12px;border-radius:6px;\"><em>” $selectedText</em></div>"
+        style = "<div style=\"background-color:#FAFAFA;padding:12px;border-radius:6px;\"><em>”$selectedText</em></div>"
     )
     data class Code(val selectedText: String?) : ControlStyle(
-        style = "<div style=\"background-color:#0D1117;padding:12px;border-radius:6px;\"><pre><code class=\"language-kotlin\"> $selectedText</code></pre></div>"
+        style = "<div style=\"background-color:#0D1117;padding:12px;border-radius:6px;\"><pre><code class=\"language-kotlin\">$selectedText</code></pre></div>"
     )
     data class Image(
         val selectedText: String?,

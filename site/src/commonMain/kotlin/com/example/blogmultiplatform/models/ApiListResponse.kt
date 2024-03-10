@@ -7,11 +7,11 @@ import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 
-@Serializable
+@Serializable(ApiListResponseSerializer::class)
 sealed class ApiListResponse {
     @Serializable
     @SerialName("idle")
-    object Idle : ApiListResponse()
+    data object Idle : ApiListResponse()
 
     @Serializable
     @SerialName("success")
@@ -26,7 +26,7 @@ sealed class ApiListResponse {
 sealed class ApiResponse {
     @Serializable
     @SerialName("idle")
-    object Idle : ApiResponse()
+    data object Idle : ApiResponse()
 
     @Serializable
     @SerialName("success")
@@ -37,11 +37,23 @@ sealed class ApiResponse {
     data class Error(val message: String) : ApiResponse()
 }
 
+object ApiListResponseSerializer
+    : JsonContentPolymorphicSerializer<ApiListResponse>(ApiListResponse::class) {
+    override fun selectDeserializer(
+        element: JsonElement
+    ): DeserializationStrategy<ApiListResponse> =
+        when {
+            "data" in element.jsonObject -> ApiListResponse.Success.serializer()
+            "message" in element.jsonObject -> ApiListResponse.Error.serializer()
+            else -> ApiListResponse.Idle.serializer()
+        }
+}
+
 object ApiResponseSerializer : JsonContentPolymorphicSerializer<ApiResponse>(ApiResponse::class) {
     override fun selectDeserializer(element: JsonElement): DeserializationStrategy<ApiResponse> =
         when {
             "data" in element.jsonObject -> ApiResponse.Success.serializer()
-            "message" in element.jsonObject -> ApiResponse.Success.serializer()
+            "message" in element.jsonObject -> ApiResponse.Error.serializer()
             else -> ApiResponse.Idle.serializer()
         }
 }

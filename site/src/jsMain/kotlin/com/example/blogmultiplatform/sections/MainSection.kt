@@ -22,7 +22,8 @@ import org.jetbrains.compose.web.css.px
 @Composable
 fun MainSection(
     breakpoint: Breakpoint,
-    posts: ApiListResponse
+    posts: ApiListResponse,
+    onClick: (String) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -40,7 +41,7 @@ fun MainSection(
             when (posts) {
                 ApiListResponse.Idle -> {}
                 is ApiListResponse.Success -> {
-                    MainPosts(breakpoint = breakpoint, posts = posts.data)
+                    MainPosts(breakpoint = breakpoint, posts = posts.data, onClick = onClick)
                 }
                 is ApiListResponse.Error -> {}
             }
@@ -51,7 +52,8 @@ fun MainSection(
 @Composable
 fun MainPosts(
     breakpoint: Breakpoint,
-    posts: List<PostWithoutDetails>
+    posts: List<PostWithoutDetails>,
+    onClick: (String) -> Unit,
 ) {
     if (posts.isEmpty()) return
 
@@ -61,7 +63,12 @@ fun MainPosts(
             .margin(topBottom = 50.px)
     ) {
         if (breakpoint == Breakpoint.XL) {
-            PostPreview(post = posts.first(), darkTheme = true, thumbnailHeight = 640.px) {}
+            PostPreview(
+                post = posts.first(),
+                darkTheme = true,
+                thumbnailHeight = 640.px,
+                onClick = onClick,
+            )
             Column(
                 modifier = Modifier
                     .fillMaxWidth(80.percent)
@@ -74,9 +81,7 @@ fun MainPosts(
                         vertical = false,
                         thumbnailHeight = 200.px,
                         titleMaxLines = 1,
-                        onClick = {
-
-                        }
+                        onClick = onClick,
                     )
                 }
             }
@@ -85,20 +90,20 @@ fun MainPosts(
                 modifier = Modifier.margin(right = 10.px),
                 post = posts.first(),
                 darkTheme = true,
-                onClick = {}
+                onClick = onClick,
             )
             PostPreview(
                 modifier = Modifier.margin(left = 10.px),
                 post = posts[1],
                 darkTheme = true,
-                onClick = {}
+                onClick = onClick,
             )
         } else {
             PostPreview(
                 post = posts.first(),
                 darkTheme = true,
                 thumbnailHeight = 640.px,
-                onClick = {}
+                onClick = onClick,
             )
         }
     }

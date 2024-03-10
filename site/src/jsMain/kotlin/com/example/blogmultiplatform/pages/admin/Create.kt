@@ -322,6 +322,7 @@ fun CreateScreen() {
                     },
                     onLinkClick = { uiEvent = uiEvent.copy(linkPopup = true) },
                     onImageClick = { uiEvent = uiEvent.copy(imagePopup = true) },
+                    onApplied = { uiEvent = uiEvent.copy(content = getEditor().value) },
                 )
                 Editor(
                     text = uiEvent.content,
@@ -388,6 +389,7 @@ fun CreateScreen() {
                         title = title,
                     )
                 )
+                uiEvent = uiEvent.copy(content = getEditor().value)
             },
         )
     }
@@ -403,6 +405,7 @@ fun CreateScreen() {
                         desc = desc,
                     )
                 )
+                uiEvent = uiEvent.copy(content = getEditor().value)
             },
         )
     }
@@ -530,6 +533,7 @@ fun EditorControls(
     editorVisibilityChange: () -> Unit,
     onLinkClick: () -> Unit,
     onImageClick: () -> Unit,
+    onApplied: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         SimpleGrid(
@@ -548,6 +552,7 @@ fun EditorControls(
                             editorControl = editorControl,
                             onLinkClick = onLinkClick,
                             onImageClick = onImageClick,
+                            onApplied = onApplied,
                         )
                     }
                 }

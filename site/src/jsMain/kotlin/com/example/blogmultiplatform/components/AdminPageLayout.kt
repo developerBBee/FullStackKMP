@@ -16,6 +16,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.px
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun AdminPageLayout(content: @Composable () -> Unit) {
@@ -32,7 +33,7 @@ fun AdminPageLayout(content: @Composable () -> Unit) {
                 OverflowSidePanel(
                     onMenuCloseArg = {
                         scope.launch {
-                            delay(300)
+                            delay(300.milliseconds)
                             overflowMenuOpened = false
                         }
                     }

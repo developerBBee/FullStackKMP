@@ -41,6 +41,7 @@ import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.px
+import kotlin.time.Duration.Companion.milliseconds
 
 @Page(routeOverride = "query")
 @Composable
@@ -134,7 +135,7 @@ fun SearchPage() {
             OverflowSidePanel(
                 onMenuCloseArg = {
                     scope.launch {
-                        delay(300)
+                        delay(300.milliseconds)
                         overflowMenuOpened = false
                     }
                 },

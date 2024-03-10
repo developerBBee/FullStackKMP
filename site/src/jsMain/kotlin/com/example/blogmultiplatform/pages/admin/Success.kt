@@ -22,6 +22,7 @@ import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.text.SpanText
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.web.css.px
+import kotlin.time.Duration.Companion.milliseconds
 
 @Page
 @Composable
@@ -30,7 +31,7 @@ fun Success() {
     val postUpdated = context.route.params.containsKey(UPDATED_PARAM)
 
     LaunchedEffect(Unit) {
-        delay(5000)
+        delay(5000.milliseconds)
         context.router.navigateTo(Screen.AdminCreate.route)
     }
 

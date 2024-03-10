@@ -28,9 +28,8 @@ suspend fun checkUserExistence(user: User): UserWithoutPassword? {
         window.api.tryPost(
             apiPath = "usercheck",
             body = Json.encodeToString(user).encodeToByteArray()
-        )?.decodeToString()?.let { result ->
-            result.parseData<UserWithoutPassword>()
-        } ?: throw Exception(message = "null result")
+        )?.decodeToString()?.parseData<UserWithoutPassword>()
+            ?: throw Exception(message = "null result")
     }.onFailure { e ->
         println("ApiFunctions: checkUserExistence() failed.")
         println(e.message)
@@ -253,9 +252,8 @@ suspend fun fetchSelectedPost(id: String): ApiResponse =
     runCatching {
         window.api.tryGet(
             apiPath = "readselectionpost?$POST_ID_PARAM=$id"
-        )?.decodeToString()?.let { result ->
-            result.parseData<ApiResponse.Success>()
-        } ?: ApiResponse.Error(message = "result is null.")
+        )?.decodeToString()?.parseData<ApiResponse>()
+            ?: throw IllegalStateException(message = "result is null.")
     }.getOrElse { e ->
         println(e.stackTraceToString())
         ApiResponse.Error(message = e.message.toString())
@@ -266,14 +264,13 @@ suspend fun subscribeToNewsletter(newsletter: Newsletter): String =
         window.api.tryPost(
             apiPath = "subscribe",
             body = Json.encodeToString(newsletter).encodeToByteArray()
-        )?.decodeToString()?.let { result ->
-            result.parseData<String>()
-        } ?: throw IllegalStateException("result is null.")
+        )?.decodeToString()?.parseData<String>()
+            ?: throw IllegalStateException(message = "result is null.")
     }.getOrElse { e ->
         println(e.stackTraceToString())
         e.message ?: "Error on subscribeNewsletter"
     }
 
-inline fun <reified T> String?.parseData(): T {
-    return Json.decodeFromString(this.toString())
+inline fun <reified T> String.parseData(): T {
+    return Json.decodeFromString(this)
 }

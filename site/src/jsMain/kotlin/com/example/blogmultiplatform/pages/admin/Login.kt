@@ -59,6 +59,7 @@ import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Input
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.set
+import kotlin.time.Duration.Companion.milliseconds
 
 @Page
 @Composable
@@ -154,12 +155,12 @@ fun LoginScreen() {
                                     context.router.navigateTo(Screen.AdminHome.route)
                                 } else {
                                     errorText = "User does not exist."
-                                    delay(3000)
+                                    delay(3000.milliseconds)
                                     errorText = " "
                                 }
                             } else {
                                 errorText = "Input fields are empty."
-                                delay(3000)
+                                delay(3000.milliseconds)
                                 errorText = " "
                             }
                         }

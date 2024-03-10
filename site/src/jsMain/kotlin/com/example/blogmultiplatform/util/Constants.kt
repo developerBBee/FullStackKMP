@@ -42,4 +42,5 @@ object Id {
     const val editor = "editor"
     const val editorPreview = "editorPreview"
     const val adminSearchBar = "adminSearchBar"
+    const val postContent = "postContent"
 }

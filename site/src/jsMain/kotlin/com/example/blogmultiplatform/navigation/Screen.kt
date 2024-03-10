@@ -28,4 +28,7 @@ sealed class Screen(val route: String) {
         fun searchByCategory(category: Category) = "$route?$CATEGORY_PARAM=${category.name}"
         fun searchByTitle(query: String) = "$route?$QUERY_PARAM=$query"
     }
+    data object PostPage: Screen("/posts/post") {
+        fun getPost(id: String) = "$route?$POST_ID_PARAM=$id"
+    }
 }
