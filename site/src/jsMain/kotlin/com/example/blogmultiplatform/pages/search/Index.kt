@@ -18,6 +18,7 @@ import com.example.blogmultiplatform.models.Constants.CATEGORY_PARAM
 import com.example.blogmultiplatform.models.Constants.QUERY_PARAM
 import com.example.blogmultiplatform.models.PostWithoutDetails
 import com.example.blogmultiplatform.navigation.Screen
+import com.example.blogmultiplatform.sections.FooterSection
 import com.example.blogmultiplatform.sections.HeaderSection
 import com.example.blogmultiplatform.sections.PostsSection
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
@@ -182,7 +183,7 @@ fun SearchPage() {
                         )
                     }
                 },
-                onClick = { },
+                onClick = { context.router.navigateTo(Screen.PostPage.getPost(it)) },
             )
         } else if (hasQueryParam) {
             PostsSection(
@@ -200,7 +201,7 @@ fun SearchPage() {
                         )
                     }
                 },
-                onClick = { },
+                onClick = { context.router.navigateTo(Screen.PostPage.getPost(it)) },
             )
         }
         when (val response = apiResponse) {
@@ -222,5 +223,6 @@ fun SearchPage() {
 
             else -> {}
         }
+        FooterSection()
     }
 }
