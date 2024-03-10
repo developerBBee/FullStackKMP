@@ -47,11 +47,12 @@ fun SearchBar(
     modifier: Modifier = Modifier,
     fullWidth: Boolean = true,
     darkTheme: Boolean = false,
+    initialSearchBarText: String = "",
     onSearchIconClick: (Boolean) -> Unit = {},
     onEnterClick: (String) -> Unit
 ) {
     var focused by remember { mutableStateOf(false) }
-    var searchText by remember { mutableStateOf("") }
+    var searchText by remember { mutableStateOf(initialSearchBarText) }
 
     LaunchedEffect(breakpoint) {
         if (breakpoint >= Breakpoint.SM) onSearchIconClick(false)
@@ -60,6 +61,9 @@ fun SearchBar(
         if (breakpoint < Breakpoint.SM) {
             searchText = ""
         }
+    }
+    LaunchedEffect(initialSearchBarText) {
+        searchText = initialSearchBarText
     }
 
     if (breakpoint >= Breakpoint.SM || fullWidth) {

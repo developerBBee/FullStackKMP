@@ -43,6 +43,7 @@ fun HeaderSection(
     context: PageContext,
     breakpoint: Breakpoint,
     selectedCategory: Category? = null,
+    initialSearchBarText: String = "",
     logoHome: String = Res.Image.logoHome,
     onMenuClick: () -> Unit = {},
 ) {
@@ -63,6 +64,7 @@ fun HeaderSection(
                 context = context,
                 breakpoint = breakpoint,
                 selectedCategory = selectedCategory,
+                initialSearchBarText = initialSearchBarText,
                 logoHome = logoHome,
                 onMenuClick = onMenuClick,
             )
@@ -75,6 +77,7 @@ fun Header(
     context: PageContext,
     breakpoint: Breakpoint,
     selectedCategory: Category?,
+    initialSearchBarText: String,
     logoHome: String,
     onMenuClick: () -> Unit,
 ) {
@@ -125,8 +128,9 @@ fun Header(
             breakpoint = breakpoint,
             fullWidth = fullSearchBarOpened,
             darkTheme = true,
+            initialSearchBarText = initialSearchBarText,
             onSearchIconClick = { fullSearchBarOpened = it },
-            onEnterClick = {}
+            onEnterClick = { context.router.navigateTo(Screen.SearchPage.searchByTitle(it)) }
         )
     }
 }
