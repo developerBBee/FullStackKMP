@@ -101,9 +101,13 @@ fun HomePage() {
                         delay(300)
                         overflowMenuOpened = false
                     }
-                }
+                },
             ) {
-                CategoryNavigationItems(context = context, vertical = true)
+                CategoryNavigationItems(
+                    context = context,
+                    vertical = true,
+                    onMenuCloseArg = { overflowMenuOpened = false },
+                )
             }
         }
         HeaderSection(

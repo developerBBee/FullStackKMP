@@ -232,6 +232,7 @@ private fun CollapsedSidePanel(onMenuClick: () -> Unit) {
 @Composable
 fun OverflowSidePanel(
     onMenuCloseArg: () -> Unit,
+    onClickHome: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     val breakpoint = rememberBreakpoint()
@@ -285,7 +286,12 @@ fun OverflowSidePanel(
                     size = IconSize.LG,
                 )
                 Image(
-                    modifier = Modifier.width(80.px),
+                    modifier = Modifier.width(80.px)
+                        .cursor(Cursor.Pointer)
+                        .onClick {
+                            onClickHome()
+                            onMenuClose()
+                        },
                     src = Res.Image.logo,
                     description = "Logo Image"
                 )

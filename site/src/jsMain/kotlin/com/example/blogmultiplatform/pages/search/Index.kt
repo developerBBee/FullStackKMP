@@ -15,6 +15,7 @@ import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.Constants
 import com.example.blogmultiplatform.models.Constants.CATEGORY_PARAM
 import com.example.blogmultiplatform.models.PostWithoutDetails
+import com.example.blogmultiplatform.navigation.Screen
 import com.example.blogmultiplatform.sections.HeaderSection
 import com.example.blogmultiplatform.sections.PostsSection
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
@@ -63,6 +64,10 @@ fun SearchPage() {
         }
     }
 
+    val selectedCategory = runCatching {
+        Category.valueOf(value)
+    }.getOrNull()
+
     val onSuccessSearch: (ApiListResponse.Success) -> Unit = { response ->
         searchedPosts.addAll(response.data)
         postsToSkip += Constants.POSTS_PER_PAGE
@@ -71,9 +76,9 @@ fun SearchPage() {
 
     LaunchedEffect(key1 = context.route) {
         postsToSkip = 0
-        if (hasCategoryParam) {
+        if (hasCategoryParam && selectedCategory != null) {
             searchPostsByCategory(
-                category = Category.valueOf(value),
+                category = selectedCategory,
                 skip = postsToSkip,
                 onSuccess = {
                     searchedPosts.clear()
@@ -96,46 +101,50 @@ fun SearchPage() {
                         delay(300)
                         overflowMenuOpened = false
                     }
-                }
+                },
+                onClickHome = { context.router.navigateTo(Screen.HomePage.route) },
             ) {
                 CategoryNavigationItems(
                     context = context,
-                    selectedCategory = Category.valueOf(value),
-                    vertical = true
+                    selectedCategory = selectedCategory,
+                    vertical = true,
+                    onMenuCloseArg = { overflowMenuOpened = false },
                 )
             }
         }
         HeaderSection(
             context = context,
             breakpoint = breakpoint,
-            selectedCategory = Category.valueOf(value),
+            selectedCategory = selectedCategory,
             logoHome = Res.Image.logo,
             onMenuClick = { overflowMenuOpened = true }
         )
-        SpanText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .textAlign(TextAlign.Center)
-                .margin(top = 100.px, bottom = 40.px)
-                .fontFamily(FONT_FAMILY)
-                .fontSize(36.px),
-            text = value
-        )
-        PostsSection(
-            breakpoint = breakpoint,
-            posts = searchedPosts,
-            showMoreVisibility = showMorePosts,
-            onShowMore = {
-                scope.launch {
-                    searchPostsByCategory(
-                        category = Category.valueOf(value),
-                        skip = postsToSkip,
-                        onSuccess = { onSuccessSearch(it) },
-                        onError = { println(it.message) },
-                    )
-                }
-            },
-            onClick = { },
-        )
+        if (selectedCategory != null) {
+            SpanText(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .textAlign(TextAlign.Center)
+                    .margin(top = 100.px, bottom = 40.px)
+                    .fontFamily(FONT_FAMILY)
+                    .fontSize(36.px),
+                text = value
+            )
+            PostsSection(
+                breakpoint = breakpoint,
+                posts = searchedPosts,
+                showMoreVisibility = showMorePosts,
+                onShowMore = {
+                    scope.launch {
+                        searchPostsByCategory(
+                            category = selectedCategory,
+                            skip = postsToSkip,
+                            onSuccess = { onSuccessSearch(it) },
+                            onError = { println(it.message) },
+                        )
+                    }
+                },
+                onClick = { },
+            )
+        }
     }
 }

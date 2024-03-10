@@ -26,7 +26,8 @@ import org.jetbrains.compose.web.css.px
 fun CategoryNavigationItems(
     context: PageContext,
     selectedCategory: Category? = null,
-    vertical: Boolean = false
+    vertical: Boolean = false,
+    onMenuCloseArg: () -> Unit = {},
 ) {
     Category.entries.forEach { category ->
         Link(
@@ -49,6 +50,7 @@ fun CategoryNavigationItems(
                 .textDecorationLine(TextDecorationLine.None)
                 .onClick {
                     context.router.navigateTo(searchByCategory(category))
+                    onMenuCloseArg()
                 },
             path = "",
             text = category.name
