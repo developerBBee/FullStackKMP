@@ -1,7 +1,7 @@
 [versions]
-jetbrains-compose = "1.5.11"
-kobweb = "0.15.4"
-kotlin = "1.9.21"
+jetbrains-compose = "1.6.1"
+kobweb = "0.17.0"
+kotlin = "1.9.22"
 mongodb = "4.11.0"
 serialization = "1.6.2"
 agp = "8.3.0"
@@ -12,6 +12,10 @@ espresso-core = "3.5.1"
 lifecycle-runtime-ktx = "2.7.0"
 activity-compose = "1.8.2"
 compose-bom = "2024.02.02"
+navigation = "2.7.7"
+coroutines = "1.8.0"
+mongodb-realm = "1.14.0"
+coil = "2.3.0"
 
 [libraries]
 kobweb-api = { module = "com.varabyte.kobweb:kobweb-api", version.ref = "kobweb" }
@@ -33,6 +37,10 @@ ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 material3 = { module = "androidx.compose.material3:material3" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+mongodb-sync = { module = "io.realm.kotlin:library-sync", version.ref = "mongodb-realm" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
 [plugins]
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
@@ -44,3 +52,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+mongodb-realm = { id = "io.realm.kotlin", version.ref = "mongodb-realm" }
