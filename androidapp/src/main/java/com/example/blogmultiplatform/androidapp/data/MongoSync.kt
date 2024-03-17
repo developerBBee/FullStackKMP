@@ -4,6 +4,7 @@ import com.example.blogmultiplatform.androidapp.models.Post
 import com.example.blogmultiplatform.androidapp.util.KeyFile.APP_ID
 import com.example.blogmultiplatform.androidapp.util.RequestState
 import io.realm.kotlin.Realm
+import io.realm.kotlin.ext.query
 import io.realm.kotlin.log.LogLevel
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.sync.SyncConfiguration
@@ -36,6 +37,22 @@ object MongoSync : MongoSyncRepository {
         return if (user != null) {
             runCatching<Flow<RequestState<List<Post>>>> {
                 realm.query(Post::class)
+                    .asFlow()
+                    .map { result ->
+                        RequestState.Success(data = result.list)
+                    }
+            }.getOrElse {
+                flow { emit(RequestState.Error(it)) }
+            }
+        } else {
+            flow { emit(RequestState.Error(Exception("User not authenticated."))) }
+        }
+    }
+
+    override fun searchPostsByTitle(query: String): Flow<RequestState<List<Post>>> {
+        return if (user != null) {
+            runCatching<Flow<RequestState<List<Post>>>> {
+                realm.query<Post>(query = "title CONTAINS[c] $0", query)
                     .asFlow()
                     .map { result ->
                         RequestState.Success(data = result.list)

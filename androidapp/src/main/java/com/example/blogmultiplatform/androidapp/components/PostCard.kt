@@ -1,10 +1,13 @@
 package com.example.blogmultiplatform.androidapp.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
@@ -25,6 +28,7 @@ import com.example.blogmultiplatform.androidapp.models.Post
 import com.example.blogmultiplatform.androidapp.util.convertLongToDate
 import com.example.blogmultiplatform.androidapp.util.decodeThumbnailImage
 import com.example.blogmultiplatform.androidapp.models.Category
+import com.example.blogmultiplatform.androidapp.util.RequestState
 
 @Composable
 fun PostCard(
@@ -91,6 +95,42 @@ fun PostCard(
                     label = { Text(text = Category.valueOf(post.category).name) }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun PostCardsView(
+    modifier: Modifier = Modifier,
+    posts: RequestState<List<Post>>,
+    hideMessage: Boolean = false,
+) {
+    when (posts) {
+        is RequestState.Success -> {
+            if (posts.data.isNotEmpty()) {
+                LazyColumn(
+                    modifier = modifier,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(
+                        items = posts.data,
+                        key = { post -> post._id }
+                    ) { post ->
+                        PostCard(post = post, onPostClick = {})
+                    }
+                }
+            } else {
+                EmptyUI()
+            }
+        }
+        is RequestState.Error -> {
+            EmptyUI(message = posts.message.message ?: "Failure by unknown reason")
+        }
+        is RequestState.Loading -> {
+            EmptyUI(loading = true)
+        }
+        is RequestState.Idle -> {
+            EmptyUI(hideMessage = hideMessage)
         }
     }
 }
