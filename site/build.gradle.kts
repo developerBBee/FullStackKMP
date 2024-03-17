@@ -45,6 +45,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(libs.kotlinx.serialization)
+            implementation(project(":shared"))
         }
 
         jsMain.dependencies {
@@ -54,12 +55,12 @@ kotlin {
             implementation(libs.silk.icons.fa)
             implementation(libs.kotlinx.serialization)
             // implementation(libs.kobwebx.markdown)
-
         }
         jvmMain.dependencies {
             compileOnly(libs.kobweb.api) // Provided by Kobweb backend at runtime
             implementation(libs.mongodb.driver)
             implementation(libs.kotlinx.serialization)
+//            implementation(project(":shared"))
         }
     }
 }

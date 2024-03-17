@@ -9,5 +9,6 @@ pluginManagement {
 
 rootProject.name = "BlogMultiplatform"
 
+include(":shared")
 include(":site")
 include(":androidapp")
