@@ -104,6 +104,7 @@ fun PostCardsView(
     modifier: Modifier = Modifier,
     posts: RequestState<List<Post>>,
     hideMessage: Boolean = false,
+    onPostClick: (String) -> Unit,
 ) {
     when (posts) {
         is RequestState.Success -> {
@@ -116,7 +117,7 @@ fun PostCardsView(
                         items = posts.data,
                         key = { post -> post._id }
                     ) { post ->
-                        PostCard(post = post, onPostClick = {})
+                        PostCard(post = post, onPostClick = onPostClick)
                     }
                 }
             } else {

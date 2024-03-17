@@ -1,5 +1,6 @@
 package com.example.blogmultiplatform.androidapp.data
 
+import com.example.blogmultiplatform.androidapp.models.Category
 import com.example.blogmultiplatform.androidapp.models.Post
 import com.example.blogmultiplatform.androidapp.util.KeyFile.APP_ID
 import com.example.blogmultiplatform.androidapp.util.RequestState
@@ -56,6 +57,22 @@ object MongoSync : MongoSyncRepository {
                     .asFlow()
                     .map { result ->
                         RequestState.Success(data = result.list)
+                    }
+            }.getOrElse {
+                flow { emit(RequestState.Error(it)) }
+            }
+        } else {
+            flow { emit(RequestState.Error(Exception("User not authenticated."))) }
+        }
+    }
+
+    override fun searchPostsByCategory(category: Category): Flow<RequestState<List<Post>>> {
+        return if (user != null) {
+            runCatching<Flow<RequestState<List<Post>>>> {
+                realm.query<Post>(query = "category == $0", category.name)
+                    .asFlow()
+                    .map {
+                        RequestState.Success(data = it.list)
                     }
             }.getOrElse {
                 flow { emit(RequestState.Error(it)) }
