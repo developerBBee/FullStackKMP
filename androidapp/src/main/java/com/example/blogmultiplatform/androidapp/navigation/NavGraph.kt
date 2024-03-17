@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.example.blogmultiplatform.androidapp.models.Category
 import com.example.blogmultiplatform.androidapp.screens.category.CategoryScreen
 import com.example.blogmultiplatform.androidapp.screens.category.CategoryViewModel
+import com.example.blogmultiplatform.androidapp.screens.details.DetailsScreen
 import com.example.blogmultiplatform.androidapp.screens.home.HomeScreen
 import com.example.blogmultiplatform.androidapp.screens.home.HomeViewModel
 
@@ -49,7 +50,7 @@ fun SetupNavGraph(navController: NavHostController) {
                     }
                 },
                 onSearch = { viewModel.searchPosts(it) },
-                onPostClick = {},
+                onPostClick = { navController.navigate(Screen.Details.passPostId(it)) },
             )
         }
         composable(
@@ -67,9 +68,20 @@ fun SetupNavGraph(navController: NavHostController) {
                 posts = viewModel.categoryPost.value,
                 category = selectedCategory,
                 onBackPress = { navController.popBackStack() },
-                onPostClick = {},
+                onPostClick = { navController.navigate(Screen.Details.passPostId(it)) },
             )
         }
-        composable(route = Screen.Details.route) {}
+        composable(
+            route = Screen.Details.route,
+            arguments = listOf(navArgument(name = "postId") {
+                type = NavType.StringType
+            })
+        ) {
+            val postId = it.arguments?.getString("postId")
+            DetailsScreen(
+                url = "http://10.0.2.2:8080/posts/post?postId=$postId",
+                onBackPress = { navController.popBackStack() },
+            )
+        }
     }
 }
