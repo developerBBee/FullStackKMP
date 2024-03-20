@@ -1,10 +1,10 @@
 package com.example.blogmultiplatform.data
 
-import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.Newsletter
 import com.example.blogmultiplatform.models.Post
 import com.example.blogmultiplatform.models.PostWithoutDetails
 import com.example.blogmultiplatform.models.User
+import com.example.shared.Category
 
 interface MongoRepository {
     suspend fun addPost(post: Post): Boolean

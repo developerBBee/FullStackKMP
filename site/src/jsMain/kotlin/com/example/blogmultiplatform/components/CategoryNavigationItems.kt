@@ -1,11 +1,11 @@
 package com.example.blogmultiplatform.components
 
 import androidx.compose.runtime.Composable
-import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.Theme
 import com.example.blogmultiplatform.navigation.Screen.SearchPage.searchByCategory
 import com.example.blogmultiplatform.styles.CategoryItemStyle
 import com.example.blogmultiplatform.util.Constants
+import com.example.shared.Category
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextDecorationLine
 import com.varabyte.kobweb.compose.ui.Modifier

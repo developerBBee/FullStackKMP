@@ -1,9 +1,9 @@
 package com.example.blogmultiplatform.components
 
 import androidx.compose.runtime.Composable
-import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.Theme
 import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
+import com.example.shared.Category
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier

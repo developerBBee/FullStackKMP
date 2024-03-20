@@ -12,7 +12,6 @@ import com.example.blogmultiplatform.components.CategoryNavigationItems
 import com.example.blogmultiplatform.components.LoadingIndicator
 import com.example.blogmultiplatform.components.OverflowSidePanel
 import com.example.blogmultiplatform.models.ApiListResponse
-import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.Constants
 import com.example.blogmultiplatform.models.Constants.CATEGORY_PARAM
 import com.example.blogmultiplatform.models.Constants.QUERY_PARAM
@@ -25,6 +24,7 @@ import com.example.blogmultiplatform.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform.util.Res
 import com.example.blogmultiplatform.util.searchPostsByCategory
 import com.example.blogmultiplatform.util.searchPostsByTitle
+import com.example.shared.Category
 import com.varabyte.kobweb.compose.css.TextAlign
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column

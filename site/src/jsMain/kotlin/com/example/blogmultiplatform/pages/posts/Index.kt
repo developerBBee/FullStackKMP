@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import com.example.blogmultiplatform.Constants.SHOW_SECTIONS_PARAM
+import com.example.shared.Constants.SHOW_SECTIONS_PARAM
 import com.example.blogmultiplatform.components.CategoryNavigationItems
 import com.example.blogmultiplatform.components.ErrorView
 import com.example.blogmultiplatform.components.LoadingIndicator

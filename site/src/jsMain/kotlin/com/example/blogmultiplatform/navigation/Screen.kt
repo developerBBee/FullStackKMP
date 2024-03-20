@@ -1,10 +1,10 @@
 package com.example.blogmultiplatform.navigation
 
-import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.Constants.CATEGORY_PARAM
 import com.example.blogmultiplatform.models.Constants.POST_ID_PARAM
 import com.example.blogmultiplatform.models.Constants.QUERY_PARAM
 import com.example.blogmultiplatform.models.Constants.UPDATED_PARAM
+import com.example.shared.Category
 
 
 sealed class Screen(val route: String) {

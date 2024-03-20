@@ -2,7 +2,6 @@ package com.example.blogmultiplatform.util
 
 import com.example.blogmultiplatform.models.ApiListResponse
 import com.example.blogmultiplatform.models.ApiResponse
-import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.Constants.AUTHOR_PARAM
 import com.example.blogmultiplatform.models.Constants.CATEGORY_PARAM
 import com.example.blogmultiplatform.models.Constants.POST_ID_PARAM
@@ -13,6 +12,7 @@ import com.example.blogmultiplatform.models.Post
 import com.example.blogmultiplatform.models.RandomJoke
 import com.example.blogmultiplatform.models.User
 import com.example.blogmultiplatform.models.UserWithoutPassword
+import com.example.shared.Category
 import com.varabyte.kobweb.browser.api
 import com.varabyte.kobweb.browser.http.http
 import kotlinx.browser.localStorage

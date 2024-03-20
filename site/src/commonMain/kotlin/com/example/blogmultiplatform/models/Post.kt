@@ -1,5 +1,6 @@
 package com.example.blogmultiplatform.models
 
+import com.example.shared.Category
 import kotlinx.serialization.Serializable
 
 @Serializable

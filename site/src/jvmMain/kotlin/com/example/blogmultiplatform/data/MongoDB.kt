@@ -1,7 +1,6 @@
 package com.example.blogmultiplatform.data
 
-import com.example.blogmultiplatform.Constants.DEBUG
-import com.example.blogmultiplatform.models.Category
+import com.example.shared.Constants.DEBUG
 import com.example.blogmultiplatform.models.Constants.POSTS_PER_PAGE
 import com.example.blogmultiplatform.models.Newsletter
 import com.example.blogmultiplatform.models.Post
@@ -9,6 +8,8 @@ import com.example.blogmultiplatform.models.PostWithoutDetails
 import com.example.blogmultiplatform.models.User
 import com.example.blogmultiplatform.util.Constants.DATABASE_NAME
 import com.example.blogmultiplatform.util.Constants.MAIN_POSTS_LIMIT
+import com.example.blogmultiplatform.util.KeyFile
+import com.example.shared.Category
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts.descending
 import com.mongodb.client.model.Updates
@@ -33,10 +34,12 @@ fun initMongoDB(context: InitApiContext) {
 class MongoDB(private val context: InitApiContext) : MongoRepository {
     private val client =
         if (DEBUG) MongoClient.create() // Localhost
-        else MongoClient.create(checkNotNull(System.getenv("MONGO_DB")))
+        else MongoClient.create(KeyFile.MONGO_DB_URI)
+//        else MongoClient.create(checkNotNull(System.getenv("MONGO_DB")))
     private val database = client.getDatabase(
         if (DEBUG) DATABASE_NAME
-        else checkNotNull(System.getenv("DATABASE_NAME"))
+        else KeyFile.ATLAS_DATABASE_NAME
+//        else checkNotNull(System.getenv("DATABASE_NAME"))
     )
     private val userCollection = database.getCollection<User>("user")
     private val postCollection = database.getCollection<Post>("post")
