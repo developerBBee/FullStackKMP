@@ -1,5 +1,6 @@
 package com.example.blogmultiplatform.data
 
+import com.example.blogmultiplatform.Constants.DEBUG
 import com.example.blogmultiplatform.models.Category
 import com.example.blogmultiplatform.models.Constants.POSTS_PER_PAGE
 import com.example.blogmultiplatform.models.Newsletter
@@ -30,8 +31,13 @@ fun initMongoDB(context: InitApiContext) {
 }
 
 class MongoDB(private val context: InitApiContext) : MongoRepository {
-    private val client = MongoClient.create()
-    private val database = client.getDatabase(DATABASE_NAME)
+    private val client =
+        if (DEBUG) MongoClient.create() // Localhost
+        else MongoClient.create(checkNotNull(System.getenv("MONGO_DB")))
+    private val database = client.getDatabase(
+        if (DEBUG) DATABASE_NAME
+        else checkNotNull(System.getenv("DATABASE_NAME"))
+    )
     private val userCollection = database.getCollection<User>("user")
     private val postCollection = database.getCollection<Post>("post")
     private val newsletterCollection = database.getCollection<Newsletter>("newsletter")
